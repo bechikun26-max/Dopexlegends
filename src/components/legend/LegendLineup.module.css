@@ -1,0 +1,33 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.selectAll {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 2px solid #2d3748;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.selectAllCheckbox {
+  width: 1.1rem;
+  height: 1.1rem;
+  cursor: pointer;
+}
+
+.selectAllLabel {
+  user-select: none;
+  color: #e2e8f0;
+}
+
+.classSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}

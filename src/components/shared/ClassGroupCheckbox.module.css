@@ -1,0 +1,29 @@
+.groupHeader {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #2d3748;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.checkbox {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+}
+
+.groupName {
+  font-size: 0.95rem;
+  color: #e2e8f0;
+}
+
+.count {
+  font-size: 0.8rem;
+  color: #718096;
+  font-weight: 400;
+}

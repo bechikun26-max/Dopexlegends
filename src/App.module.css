@@ -1,0 +1,86 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: system-ui, -apple-system, sans-serif;
+  background-color: #1a1a2e;
+  color: #e0e0e0;
+}
+
+.header {
+  padding: 1rem 2rem;
+  background-color: #16213e;
+  border-bottom: 2px solid #0f3460;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #e94560;
+  font-weight: 700;
+}
+
+.nav {
+  display: flex;
+  gap: 0;
+  background-color: #16213e;
+  border-bottom: 1px solid #0f3460;
+  overflow-x: auto;
+}
+
+.tab,
+.activeTab {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: none;
+  color: #a0a0b0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s, border-bottom 0.2s, background-color 0.2s;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: #e0e0e0;
+  background-color: rgba(233, 69, 96, 0.05);
+}
+
+.tab:focus-visible,
+.activeTab:focus-visible {
+  outline: 2px solid #e94560;
+  outline-offset: -2px;
+}
+
+.activeTab {
+  color: #e94560;
+  border-bottom: 3px solid #e94560;
+  background-color: rgba(233, 69, 96, 0.08);
+}
+
+.content {
+  flex: 1;
+  padding: 1.5rem;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .nav {
+    flex-wrap: nowrap;
+  }
+
+  .tab,
+  .activeTab {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .content {
+    padding: 1rem;
+  }
+}
