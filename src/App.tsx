@@ -1,15 +1,12 @@
 import { useState, useCallback } from 'react';
 import { AppProvider, useAppContext } from './context/AppContext';
 import { LegendGacha } from './components/legend/LegendGacha';
-import { PartyGacha } from './components/legend/PartyGacha';
 import { WeaponGacha } from './components/weapon/WeaponGacha';
 import { RuleRoulette } from './components/roulette/RuleRoulette';
 import { UserProfile } from './components/profile/UserProfile';
 import { AdminPanel } from './components/admin/AdminPanel';
 import { AdminLogin } from './components/admin/AdminLogin';
 import styles from './App.module.css';
-
-type Page = 'legend' | 'weapon' | 'roulette' | 'profile';
 
 /** パスが /bo かどうかを判定 */
 function isBOPath(): boolean {
@@ -18,74 +15,62 @@ function isBOPath(): boolean {
 
 /** 通常ユーザー向けアプリ */
 function AppContent() {
-  const [currentPage, setCurrentPage] = useState<Page>('legend');
-  const { legendGacha, weaponGacha, effectiveLineup } = useAppContext();
-
-  const showSlot3 = legendGacha.result?.hasThirdWeaponSlot === true;
+  const { legendGacha, weaponGacha } = useAppContext();
+  const showSlot3 = legendGacha.partyResult?.some(l => l.hasThirdWeaponSlot) === true;
+  const [showProfile, setShowProfile] = useState(false);
 
   return (
     <div className={styles.app}>
       <header className={styles.header}>
         <h1 className={styles.title}>Apex Gacha System</h1>
+        <button
+          type="button"
+          className={styles.profileButton}
+          onClick={() => setShowProfile(!showProfile)}
+          aria-label="プロフィール設定"
+          title="プロフィール設定"
+        >
+          👤
+        </button>
       </header>
 
-      <nav className={styles.nav} aria-label="メインナビゲーション">
-        <button
-          type="button"
-          onClick={() => setCurrentPage('legend')}
-          className={currentPage === 'legend' ? styles.activeTab : styles.tab}
-          aria-current={currentPage === 'legend' ? 'page' : undefined}
-        >
-          レジェンドガチャ
-        </button>
-        <button
-          type="button"
-          onClick={() => setCurrentPage('weapon')}
-          className={currentPage === 'weapon' ? styles.activeTab : styles.tab}
-          aria-current={currentPage === 'weapon' ? 'page' : undefined}
-        >
-          武器ガチャ
-        </button>
-        <button
-          type="button"
-          onClick={() => setCurrentPage('roulette')}
-          className={currentPage === 'roulette' ? styles.activeTab : styles.tab}
-          aria-current={currentPage === 'roulette' ? 'page' : undefined}
-        >
-          ルーレット
-        </button>
-        <button
-          type="button"
-          onClick={() => setCurrentPage('profile')}
-          className={currentPage === 'profile' ? styles.activeTab : styles.tab}
-          aria-current={currentPage === 'profile' ? 'page' : undefined}
-        >
-          プロフィール
-        </button>
-      </nav>
+      {/* プロフィールパネル */}
+      {showProfile && (
+        <div className={styles.profileOverlay} onClick={() => setShowProfile(false)}>
+          <div className={styles.profilePanel} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.profileHeader}>
+              <span className={styles.profileTitle}>プロフィール設定</span>
+              <button
+                type="button"
+                className={styles.profileClose}
+                onClick={() => setShowProfile(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className={styles.profileContent}>
+              <UserProfile />
+            </div>
+          </div>
+        </div>
+      )}
 
       <main className={styles.content}>
-        {currentPage === 'legend' && (
-          <div>
-            <LegendGacha />
-            <PartyGacha
-              onExecute={legendGacha.executePartyGacha}
-              partyResult={legendGacha.partyResult}
-              error={legendGacha.error}
-              effectiveLineup={effectiveLineup}
-            />
-          </div>
-        )}
-        {currentPage === 'weapon' && <WeaponGacha showSlot3={showSlot3} />}
-        {currentPage === 'roulette' && (
-          <RuleRoulette
-            legendChecks={legendGacha.checks}
-            weaponSlot1Checks={weaponGacha.slot1Checks}
-            setLegendChecks={legendGacha.setChecks}
-            setWeaponSlot1Checks={weaponGacha.setSlot1Checks}
-          />
-        )}
-        {currentPage === 'profile' && <UserProfile />}
+        {/* Roulette at top */}
+        <RuleRoulette
+          legendChecks={legendGacha.checks}
+          weaponSlot1Checks={weaponGacha.slot1Checks}
+          weaponSlot2Checks={weaponGacha.slot2Checks}
+          setLegendChecks={legendGacha.setChecks}
+          setWeaponSlot1Checks={weaponGacha.setSlot1Checks}
+          setWeaponSlot2Checks={weaponGacha.setSlot2Checks}
+        />
+
+        {/* Legend & Weapon side by side */}
+        <div className={styles.gachaRow}>
+          <LegendGacha />
+          <WeaponGacha showSlot3={showSlot3} />
+        </div>
       </main>
     </div>
   );

@@ -4,8 +4,7 @@ import type { Rule, Legend, Weapon, FilterResult } from '../types';
  * Apply a roulette rule to produce the resulting checkbox states.
  * - LegendClass rules: legendChecks map where matching class = true, others = false
  * - WeaponCategory rules: weaponSlot1Checks where matching category = true, others = false
- * - AmmoType rules: weaponSlot1Checks where matching ammo type = true (uses includes() for multi-ammo), others = false
- * In all weapon rule cases, weaponSlot2Checks is undefined (unchanged).
+ * - AmmoType rules: weaponSlot2Checks where matching ammo type = true (uses includes() for multi-ammo), others = false
  */
 export function applyRule(rule: Rule, legends: Legend[], weapons: Weapon[]): FilterResult {
   switch (rule.category) {
@@ -21,14 +20,14 @@ export function applyRule(rule: Rule, legends: Legend[], weapons: Weapon[]): Fil
       for (const weapon of weapons) {
         weaponSlot1Checks.set(weapon.id, weapon.category === rule.filterValue);
       }
-      return { weaponSlot1Checks, weaponSlot2Checks: undefined };
+      return { weaponSlot1Checks };
     }
     case 'AmmoType': {
-      const weaponSlot1Checks = new Map<string, boolean>();
+      const weaponSlot2Checks = new Map<string, boolean>();
       for (const weapon of weapons) {
-        weaponSlot1Checks.set(weapon.id, weapon.ammoTypes.includes(rule.filterValue as typeof weapon.ammoTypes[number]));
+        weaponSlot2Checks.set(weapon.id, weapon.ammoTypes.includes(rule.filterValue as typeof weapon.ammoTypes[number]));
       }
-      return { weaponSlot1Checks, weaponSlot2Checks: undefined };
+      return { weaponSlot2Checks };
     }
   }
 }

@@ -17,8 +17,8 @@ export const WEAPONS: Weapon[] = [
 
   // Pistol (3丁)
   { id: 'p2020', name: 'P2020', category: 'Pistol', ammoTypes: ['Light'], imagePath: '/images/weapons/p2020.png', isCarePackage: false },
-  { id: 're-45', name: 'RE-45', category: 'Pistol', ammoTypes: ['Light'], imagePath: '/images/weapons/re-45.png', isCarePackage: false },
-  { id: 'wingman', name: 'ウィングマン', category: 'Pistol', ammoTypes: ['Heavy'], imagePath: '/images/weapons/wingman.png', isCarePackage: false },
+  { id: 're-45', name: 'RE-45', category: 'Pistol', ammoTypes: ['Energy'], imagePath: '/images/weapons/re-45.png', isCarePackage: false },
+  { id: 'wingman', name: 'ウィングマン', category: 'Pistol', ammoTypes: ['Sniper'], imagePath: '/images/weapons/wingman.png', isCarePackage: false },
 
   // AR (5丁)
   { id: 'r-301', name: 'R-301', category: 'AR', ammoTypes: ['Light'], imagePath: '/images/weapons/r-301.png', isCarePackage: false },
@@ -28,7 +28,7 @@ export const WEAPONS: Weapon[] = [
   { id: 'nemesis', name: 'ネメシス', category: 'AR', ammoTypes: ['Energy'], imagePath: '/images/weapons/nemesis.png', isCarePackage: false },
 
   // LMG (4丁)
-  { id: 'spitfire', name: 'スピットファイア', category: 'LMG', ammoTypes: ['Heavy'], imagePath: '/images/weapons/spitfire.png', isCarePackage: false },
+  { id: 'spitfire', name: 'スピットファイア', category: 'LMG', ammoTypes: ['Light'], imagePath: '/images/weapons/spitfire.png', isCarePackage: false },
   { id: 'devotion', name: 'ディヴォーション', category: 'LMG', ammoTypes: ['Energy'], imagePath: '/images/weapons/devotion.png', isCarePackage: false },
   { id: 'rampage', name: 'ランページ', category: 'LMG', ammoTypes: ['Heavy'], imagePath: '/images/weapons/rampage.png', isCarePackage: false },
   { id: 'l-star', name: 'L-スター', category: 'LMG', ammoTypes: ['Energy'], imagePath: '/images/weapons/l-star.png', isCarePackage: false },

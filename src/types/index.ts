@@ -55,10 +55,10 @@ export interface Rule {
 export interface FilterResult {
   /** レジェンドクラス縛りの場合のチェック状態 */
   legendChecks?: Map<string, boolean>;
-  /** 武器カテゴリ/弾薬縛りの場合のSlot1チェック状態 */
+  /** 武器カテゴリ縛りの場合のSlot1チェック状態 */
   weaponSlot1Checks?: Map<string, boolean>;
-  /** Slot2は変更しない（undefined） */
-  weaponSlot2Checks?: undefined;
+  /** 弾薬種類縛りの場合のSlot2チェック状態 */
+  weaponSlot2Checks?: Map<string, boolean>;
 }
 
 // === バリデーション ===

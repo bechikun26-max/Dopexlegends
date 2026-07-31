@@ -58,8 +58,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Wire roulette to legend/weapon state setters for auto-filter
   const roulette = useRuleRoulette({
+    legendChecks: legendGacha.checks,
+    weaponSlot1Checks: weaponGacha.slot1Checks,
+    weaponSlot2Checks: weaponGacha.slot2Checks,
     setLegendChecks: legendGacha.setChecks,
     setWeaponSlot1Checks: weaponGacha.setSlot1Checks,
+    setWeaponSlot2Checks: weaponGacha.setSlot2Checks,
   });
 
   // Profile state (owned legends)

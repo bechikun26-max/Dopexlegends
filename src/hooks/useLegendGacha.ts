@@ -60,7 +60,7 @@ export function useLegendGacha(): UseLegendGachaReturn {
 
   // Gacha result state
   const [result, setResult] = useState<Legend | null>(null);
-  const [partyResult, setPartyResult] = useState<Legend[] | null>(null);
+  const [partyResult, setPartyResult] = useLocalStorage<Legend[] | null>('legend-partyResult', null);
   const [error, setError] = useState<string | null>(null);
 
   // Convert stored Record to Map for external consumers
