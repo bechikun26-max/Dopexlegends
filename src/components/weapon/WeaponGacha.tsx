@@ -149,13 +149,13 @@ export function WeaponGacha({ showSlot3 = false, externalTrigger = 0 }: WeaponGa
     }
   }, [animationCandidates, executeSlotGacha]);
 
-  // 外部トリガー（全一括実行）で武器ガチャ開始（ルーレット+レジェンド演出後）
+  // 外部トリガー（全一括実行）で武器ガチャ開始（ルーレット+レジェンド完了後）
   const prevExternalTrigger = useRef(externalTrigger);
   useEffect(() => {
     if (externalTrigger !== prevExternalTrigger.current) {
       prevExternalTrigger.current = externalTrigger;
-      // ルーレット(1.5s) + レジェンド(1.5s) 後に武器ガチャ開始
-      setTimeout(() => startAnimation(), 3400);
+      // ルーレット(2s) + レジェンド(2s) 完了後に武器ガチャ開始
+      setTimeout(() => startAnimation(), 4000);
     }
   }, [externalTrigger, startAnimation]);
 

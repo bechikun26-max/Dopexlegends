@@ -81,13 +81,13 @@ export function LegendGacha({ externalTrigger = 0 }: LegendGachaProps) {
     }
   }, [isAnimating, partySize, handleExecute]);
 
-  // 外部トリガー（全一括実行）でアニメーション開始（遅延2秒＝ルーレット後）
+  // 外部トリガー（全一括実行）でアニメーション開始（ルーレット完了後）
   const prevExternalTrigger = useRef(externalTrigger);
   useEffect(() => {
     if (externalTrigger !== prevExternalTrigger.current) {
       prevExternalTrigger.current = externalTrigger;
-      // ルーレット演出(1.5s)完了後にレジェンドガチャ開始
-      setTimeout(() => startAnimation(), 1700);
+      // ルーレット演出(1.5s + 0.1s余裕 = 1.6s)完了後にレジェンドガチャ開始
+      setTimeout(() => startAnimation(), 2000);
     }
   }, [externalTrigger, startAnimation]);
 
