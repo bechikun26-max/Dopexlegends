@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useState, useRef } from 'react';
+import { useMemo, useCallback, useState, useRef, useEffect } from 'react';
 import { useAppContext } from '../../context/AppContext';
 import { useGachaAnimation } from '../../hooks/useGachaAnimation';
 import { WEAPONS } from '../../data/weapons';
@@ -11,6 +11,7 @@ import styles from './WeaponGacha.module.css';
 
 export interface WeaponGachaProps {
   showSlot3?: boolean;
+  externalTrigger?: number;
 }
 
 /**
@@ -22,7 +23,7 @@ export interface WeaponGachaProps {
  *
  * Requirements: 4.1, 4.4, 5.1, 5.2, 5.3, 7.1, 7.2, 7.3, 7.4, 7.5
  */
-export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
+export function WeaponGacha({ showSlot3 = false, externalTrigger = 0 }: WeaponGachaProps) {
   const { weaponGacha } = useAppContext();
   const {
     slot1Checks,
@@ -147,6 +148,16 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
       slotTimeoutRefs.current.push(timeout);
     }
   }, [animationCandidates, executeSlotGacha]);
+
+  // 外部トリガー（全一括実行）で武器ガチャ開始（ルーレット+レジェンド演出後）
+  const prevExternalTrigger = useRef(externalTrigger);
+  useEffect(() => {
+    if (externalTrigger !== prevExternalTrigger.current) {
+      prevExternalTrigger.current = externalTrigger;
+      // ルーレット(1.5s) + レジェンド(1.5s) 後に武器ガチャ開始
+      setTimeout(() => startAnimation(), 3400);
+    }
+  }, [externalTrigger, startAnimation]);
 
   /** 演出中は仮表示、完了後は確定結果を表示 */
   const shownSlot1 = isAnimating ? displayItem : slot1Animating ? slot1Display : slot1Result;

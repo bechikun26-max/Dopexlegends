@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useAppContext } from '../../context/AppContext';
 import { LEGENDS } from '../../data/legends';
 import type { Legend } from '../../types';
@@ -22,11 +22,14 @@ function mapErrorMessage(error: string | null): string | null {
   }
 }
 
+interface LegendGachaProps {
+  externalTrigger?: number;
+}
+
 /**
- * レジェンドガチャのメインコンポーネント（パーティピック専用）。
- * パーティ人数選択、ガチャ実行ボタン、結果表示、ラインナップ制御を統合する。
+ * レジェンドガチャのメインコンポーネント（ピック候補専用）。
  */
-export function LegendGacha() {
+export function LegendGacha({ externalTrigger = 0 }: LegendGachaProps) {
   const { legendGacha, effectiveLineup } = useAppContext();
   const { checks, partyResult, error, toggleLegend, toggleClass, toggleAll, executePartyGacha } = legendGacha;
 
@@ -78,6 +81,16 @@ export function LegendGacha() {
     }
   }, [isAnimating, partySize, handleExecute]);
 
+  // 外部トリガー（全一括実行）でアニメーション開始（遅延2秒＝ルーレット後）
+  const prevExternalTrigger = useRef(externalTrigger);
+  useEffect(() => {
+    if (externalTrigger !== prevExternalTrigger.current) {
+      prevExternalTrigger.current = externalTrigger;
+      // ルーレット演出(1.5s)完了後にレジェンドガチャ開始
+      setTimeout(() => startAnimation(), 1700);
+    }
+  }, [externalTrigger, startAnimation]);
+
   /** 演出中は仮表示、完了後は確定結果を表示 */
   const shownMembers = isAnimating ? displayMembers : partyResult;
   const displayError = mapErrorMessage(error);
@@ -92,12 +105,12 @@ export function LegendGacha() {
           className={`${styles.executeButton} ${isAnimating ? styles.spinning : ''}`}
           onClick={startAnimation}
           disabled={isAnimating}
-          aria-label="パーティガチャ実行"
+          aria-label="レジェンドガチャ実行"
         >
-          {isAnimating ? '抽選中...' : 'パーティガチャ実行'}
+          {isAnimating ? '抽選中...' : 'レジェンドガチャ実行'}
         </button>
 
-        <span className={styles.sizeLabel}>パーティ人数:</span>
+        <span className={styles.sizeLabel}>ピック候補人数:</span>
         <div className={styles.sizeButtons}>
           {PARTY_SIZES.map((size) => (
             <button
@@ -107,7 +120,7 @@ export function LegendGacha() {
               onClick={() => setPartySize(size)}
               aria-pressed={partySize === size}
             >
-              {size}人
+              {size}
             </button>
           ))}
         </div>
@@ -117,11 +130,11 @@ export function LegendGacha() {
 
       {shownMembers && shownMembers.length > 0 && (
         <div className={styles.results}>
-          <span className={styles.resultsTitle}>パーティ結果</span>
+          <span className={styles.resultsTitle}>ピック結果</span>
           <div className={`${styles.memberList} ${isAnimating ? styles.animating : ''}`}>
             {shownMembers.map((legend, index) => (
               <div key={index} className={styles.memberCard}>
-                <span className={styles.memberLabel}>メンバー{index + 1}</span>
+                <span className={styles.memberLabel}>候補{index + 1}</span>
                 <img
                   src={legend.imagePath}
                   alt={legend.name}

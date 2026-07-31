@@ -4,6 +4,7 @@ export interface CheckboxItem {
   id: string;
   name: string;
   imagePath?: string;
+  isCarePackage?: boolean;
 }
 
 interface CheckboxGroupProps {
@@ -31,7 +32,9 @@ export function CheckboxGroup({ items, checks, onChange, groupLabel }: CheckboxG
             {item.imagePath && (
               <img src={item.imagePath} alt={item.name} className={styles.image} />
             )}
-            <span className={styles.name}>{item.name}</span>
+            <span className={`${styles.name} ${item.isCarePackage ? styles.carePackageName : ''}`}>
+              {item.name}
+            </span>
           </label>
         ))}
       </div>

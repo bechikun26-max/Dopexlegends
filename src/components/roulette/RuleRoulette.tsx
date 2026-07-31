@@ -14,6 +14,7 @@ interface RuleRouletteProps {
   setLegendChecks: (checks: Map<string, boolean>) => void;
   setWeaponSlot1Checks: (checks: Map<string, boolean>) => void;
   setWeaponSlot2Checks: (checks: Map<string, boolean>) => void;
+  externalTrigger?: number;
 }
 
 /** A single roulette panel with its own animation, result, and controls */
@@ -88,6 +89,7 @@ export function RuleRoulette({
   setLegendChecks,
   setWeaponSlot1Checks,
   setWeaponSlot2Checks,
+  externalTrigger = 0,
 }: RuleRouletteProps) {
   const {
     legendClassSlot,
@@ -110,6 +112,15 @@ export function RuleRoulette({
   const handleSpinAll = useCallback(() => {
     setSpinAllTrigger((prev) => prev + 1);
   }, []);
+
+  // 外部トリガー（全一括実行ボタン）でルーレットを即座に実行
+  const prevExternalTrigger = useRef(externalTrigger);
+  useEffect(() => {
+    if (externalTrigger !== prevExternalTrigger.current) {
+      prevExternalTrigger.current = externalTrigger;
+      setSpinAllTrigger((prev) => prev + 1);
+    }
+  }, [externalTrigger]);
 
   return (
     <section className={styles.container} aria-label="縛りルールルーレット">

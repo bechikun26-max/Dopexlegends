@@ -42,3 +42,8 @@
 .name {
   user-select: none;
 }
+
+.carePackageName {
+  color: #ef4444;
+  font-weight: 600;
+}

@@ -18,20 +18,34 @@ function AppContent() {
   const { legendGacha, weaponGacha } = useAppContext();
   const showSlot3 = legendGacha.partyResult?.some(l => l.hasThirdWeaponSlot) === true;
   const [showProfile, setShowProfile] = useState(false);
+  const [allExecuteTrigger, setAllExecuteTrigger] = useState(0);
+
+  const handleAllExecute = useCallback(() => {
+    setAllExecuteTrigger((prev) => prev + 1);
+  }, []);
 
   return (
     <div className={styles.app}>
       <header className={styles.header}>
         <h1 className={styles.title}>Apex Gacha System</h1>
-        <button
-          type="button"
-          className={styles.profileButton}
-          onClick={() => setShowProfile(!showProfile)}
-          aria-label="プロフィール設定"
-          title="プロフィール設定"
-        >
-          👤
-        </button>
+        <div className={styles.headerActions}>
+          <button
+            type="button"
+            className={styles.allExecuteButton}
+            onClick={handleAllExecute}
+          >
+            🎲 全一括実行
+          </button>
+          <button
+            type="button"
+            className={styles.profileButton}
+            onClick={() => setShowProfile(!showProfile)}
+            aria-label="プロフィール設定"
+            title="プロフィール設定"
+          >
+            👤
+          </button>
+        </div>
       </header>
 
       {/* プロフィールパネル */}
@@ -64,12 +78,13 @@ function AppContent() {
           setLegendChecks={legendGacha.setChecks}
           setWeaponSlot1Checks={weaponGacha.setSlot1Checks}
           setWeaponSlot2Checks={weaponGacha.setSlot2Checks}
+          externalTrigger={allExecuteTrigger}
         />
 
         {/* Legend & Weapon side by side */}
         <div className={styles.gachaRow}>
-          <LegendGacha />
-          <WeaponGacha showSlot3={showSlot3} />
+          <LegendGacha externalTrigger={allExecuteTrigger} />
+          <WeaponGacha showSlot3={showSlot3} externalTrigger={allExecuteTrigger} />
         </div>
       </main>
     </div>
