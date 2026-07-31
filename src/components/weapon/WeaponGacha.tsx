@@ -151,7 +151,7 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
   /** 演出中は仮表示、完了後は確定結果を表示 */
   const shownSlot1 = isAnimating ? displayItem : slot1Animating ? slot1Display : slot1Result;
   const shownSlot2 = isAnimating ? displayItem : slot2Animating ? slot2Display : slot2Result;
-  const shownSlot3 = slot3Animating ? slot3Display : slingResult;
+  const shownSlot3 = isAnimating ? displayItem : slot3Animating ? slot3Display : slingResult;
 
   return (
     <div className={styles.container}>
