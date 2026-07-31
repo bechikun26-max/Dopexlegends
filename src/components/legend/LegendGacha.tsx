@@ -33,6 +33,19 @@ export function LegendGacha() {
 
   // Read roulette applied state directly from localStorage
   const [lcApplied] = useLocalStorage<boolean>('roulette-legendClass-applied', false);
+  const [lcResult] = useLocalStorage<{ filterValue: string } | null>('roulette-legendClass-result', null);
+
+  /** レジェンドクラス縛り適用時のハイライト対象ID */
+  const legendHighlightedIds = (() => {
+    if (!lcApplied || !lcResult) return undefined;
+    const ids = new Set<string>();
+    for (const l of LEGENDS) {
+      if (l.class === lcResult.filterValue) {
+        ids.add(l.id);
+      }
+    }
+    return ids;
+  })();
 
   const [partySize, setPartySize] = useState<number>(3);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -138,13 +151,14 @@ export function LegendGacha() {
         </div>
       )}
 
-      <div className={`${styles.lineupSection} ${lcApplied ? styles.highlighted : ''}`}>
+      <div className={styles.lineupSection}>
         <CollapsibleSection title="レジェンドラインナップ設定">
           <LegendLineup
             checks={checks}
             onToggleLegend={toggleLegend}
             onToggleClass={toggleClass}
             onToggleAll={toggleAll}
+            highlightedIds={legendHighlightedIds}
           />
         </CollapsibleSection>
       </div>

@@ -52,13 +52,14 @@ function getAmmoBackground(weapon: Weapon): React.CSSProperties {
 }
 
 function SlotResult({ weapon, slotNumber }: { weapon: Weapon; slotNumber: number }) {
+  const slotLabel = slotNumber === 3 ? 'スリング' : `スロット${slotNumber}`;
   return (
     <div
       className={styles.slotResult}
       style={getAmmoBackground(weapon)}
-      aria-label={`スロット${slotNumber}の結果`}
+      aria-label={`${slotLabel}の結果`}
     >
-      <span className={styles.slotLabel}>スロット{slotNumber}</span>
+      <span className={styles.slotLabel}>{slotLabel}</span>
       <img
         src={weapon.imagePath}
         alt={weapon.name}

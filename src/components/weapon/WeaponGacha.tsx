@@ -207,9 +207,9 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
             className={`${styles.slotButton} ${slot3Animating ? styles.spinning : ''}`}
             onClick={() => startSlotAnimation(3)}
             disabled={isSlot3Empty || isAnimating || slot3Animating}
-            aria-label="スロット3 ガチャ"
+            aria-label="スリングガチャ"
           >
-            {slot3Animating ? '抽選中...' : 'スロット3 ガチャ'}
+            {slot3Animating ? '抽選中...' : 'スリングガチャ'}
           </button>
         )}
       </div>
@@ -247,17 +247,6 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
               highlightedIds={slot2HighlightedIds}
             />
           </div>
-
-          {showSlot3 && (
-            <WeaponSlotLineup
-              slotNumber={3}
-              checks={slot3Checks}
-              carePackageFlags={carePackageFlags}
-              onToggleWeapon={(weaponId) => toggleWeapon(3, weaponId)}
-              onToggleCategory={(category) => toggleCategory(3, category)}
-              onSetChecks={setSlot3Checks}
-            />
-          )}
         </CollapsibleSection>
       </div>
     </div>

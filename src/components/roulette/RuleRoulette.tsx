@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import { useRuleRoulette } from '../../hooks/useRuleRoulette';
 import type { RouletteSlot } from '../../hooks/useRuleRoulette';
 import { useGachaAnimation } from '../../hooks/useGachaAnimation';
@@ -17,7 +17,7 @@ interface RuleRouletteProps {
 }
 
 /** A single roulette panel with its own animation, result, and controls */
-function RoulettePanel({ slot }: { slot: RouletteSlot }) {
+function RoulettePanel({ slot, triggerSpin }: { slot: RouletteSlot; triggerSpin: number }) {
   const handleSpin = useCallback(() => {
     slot.spinSlot();
   }, [slot]);
@@ -27,6 +27,15 @@ function RoulettePanel({ slot }: { slot: RouletteSlot }) {
     handleSpin,
     1500
   );
+
+  // triggerSpinが変わったら（全ルーレット実行された）アニメーションを開始
+  const prevTrigger = useRef(triggerSpin);
+  useEffect(() => {
+    if (triggerSpin !== prevTrigger.current && slot.enabled) {
+      prevTrigger.current = triggerSpin;
+      startAnimation();
+    }
+  }, [triggerSpin, slot.enabled, startAnimation]);
 
   const shownRule = isAnimating ? displayItem : slot.currentResult;
 
@@ -72,12 +81,6 @@ function RoulettePanel({ slot }: { slot: RouletteSlot }) {
   );
 }
 
-/**
- * 3つの独立した縛りルールルーレットを横並びで表示するコンポーネント。
- * - クラス縛り (LegendClass)
- * - 武器1カテゴリ縛り (WeaponCategory → slot1)
- * - 武器2弾薬縛り (AmmoType → slot2)
- */
 export function RuleRoulette({
   legendChecks,
   weaponSlot1Checks,
@@ -90,7 +93,6 @@ export function RuleRoulette({
     legendClassSlot,
     weaponCategorySlot,
     ammoTypeSlot,
-    spinAll,
   } = useRuleRoulette({
     legendChecks,
     weaponSlot1Checks,
@@ -102,6 +104,13 @@ export function RuleRoulette({
 
   const anyEnabled = legendClassSlot.enabled || weaponCategorySlot.enabled || ammoTypeSlot.enabled;
 
+  // 全ルーレット実行トリガー（インクリメントして各パネルに通知）
+  const [spinAllTrigger, setSpinAllTrigger] = useState(0);
+
+  const handleSpinAll = useCallback(() => {
+    setSpinAllTrigger((prev) => prev + 1);
+  }, []);
+
   return (
     <section className={styles.container} aria-label="縛りルールルーレット">
       <div className={styles.header}>
@@ -109,7 +118,7 @@ export function RuleRoulette({
         <button
           type="button"
           className={styles.spinAllButton}
-          onClick={spinAll}
+          onClick={handleSpinAll}
           disabled={!anyEnabled}
           aria-label="全ルーレット実行"
         >
@@ -118,9 +127,9 @@ export function RuleRoulette({
       </div>
 
       <div className={styles.panelGrid}>
-        <RoulettePanel slot={legendClassSlot} />
-        <RoulettePanel slot={weaponCategorySlot} />
-        <RoulettePanel slot={ammoTypeSlot} />
+        <RoulettePanel slot={legendClassSlot} triggerSpin={spinAllTrigger} />
+        <RoulettePanel slot={weaponCategorySlot} triggerSpin={spinAllTrigger} />
+        <RoulettePanel slot={ammoTypeSlot} triggerSpin={spinAllTrigger} />
       </div>
     </section>
   );
