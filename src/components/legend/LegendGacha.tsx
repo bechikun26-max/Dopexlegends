@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useMemo } from 'react';
 import { useAppContext } from '../../context/AppContext';
 import { LEGENDS } from '../../data/legends';
 import type { Legend } from '../../types';
@@ -26,8 +26,19 @@ function mapErrorMessage(error: string | null): string | null {
  * レジェンドガチャのメインコンポーネント（ピック候補専用）。
  */
 export function LegendGacha() {
-  const { legendGacha, effectiveLineup } = useAppContext();
+  const { legendGacha, effectiveLineup, profile } = useAppContext();
   const { checks, partyResult, error, toggleLegend, toggleClass, toggleAll, executePartyGacha } = legendGacha;
+
+  /** プロフィールで未所持のレジェンドID */
+  const disabledLegendIds = useMemo(() => {
+    const ids = new Set<string>();
+    for (const l of LEGENDS) {
+      if (profile.ownedLegends.get(l.id) !== true) {
+        ids.add(l.id);
+      }
+    }
+    return ids;
+  }, [profile.ownedLegends]);
 
   const [partySize, setPartySize] = useState<number>(3);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -140,6 +151,7 @@ export function LegendGacha() {
             onToggleLegend={toggleLegend}
             onToggleClass={toggleClass}
             onToggleAll={toggleAll}
+            disabledIds={disabledLegendIds}
           />
         </CollapsibleSection>
       </div>

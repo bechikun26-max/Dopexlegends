@@ -10,6 +10,7 @@ interface LegendLineupProps {
   onToggleLegend: (legendId: string) => void;
   onToggleClass: (className: LegendClass) => void;
   onToggleAll: () => void;
+  disabledIds?: Set<string>;
 }
 
 /** クラスの表示順序と日本語名 */
@@ -21,7 +22,7 @@ const CLASS_ORDER: { class: LegendClass; label: string }[] = [
   { class: 'Controller', label: 'コントローラー' },
 ];
 
-export function LegendLineup({ checks, onToggleLegend, onToggleClass, onToggleAll }: LegendLineupProps) {
+export function LegendLineup({ checks, onToggleLegend, onToggleClass, onToggleAll, disabledIds }: LegendLineupProps) {
   const selectAllRef = useRef<HTMLInputElement>(null);
 
   /** クラスごとにグループ化されたレジェンド */
@@ -84,6 +85,7 @@ export function LegendLineup({ checks, onToggleLegend, onToggleClass, onToggleAl
               checks={checks}
               onChange={onToggleLegend}
               groupLabel={`${label}クラスのレジェンド`}
+              disabledIds={disabledIds}
             />
           </div>
         );

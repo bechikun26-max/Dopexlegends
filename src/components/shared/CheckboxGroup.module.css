@@ -47,3 +47,9 @@
   color: #ef4444;
   font-weight: 600;
 }
+
+.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
