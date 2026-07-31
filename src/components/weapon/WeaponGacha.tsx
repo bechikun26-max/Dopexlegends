@@ -77,7 +77,10 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
 
   const handleComplete = useCallback(() => {
     executeAllSlotsGacha();
-  }, [executeAllSlotsGacha]);
+    if (showSlot3) {
+      executeSlingGacha();
+    }
+  }, [executeAllSlotsGacha, showSlot3, executeSlingGacha]);
 
   const { displayItem, isAnimating, startAnimation } = useGachaAnimation<Weapon>(
     animationCandidates,
