@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useState, useRef } from 'react';
 import { useWeaponGacha } from '../../hooks/useWeaponGacha';
 import { useGachaAnimation } from '../../hooks/useGachaAnimation';
 import { WEAPONS } from '../../data/weapons';
@@ -34,6 +34,7 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
     toggleCategory,
     executeSlotGacha,
     executeAllSlotsGacha,
+    carePackageFlags,
   } = useWeaponGacha();
 
   /** 非ケアパッケージ武器のみ（演出候補） */
@@ -79,9 +80,55 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
     1500
   );
 
+  // --- 個別スロットアニメーション ---
+  const [slot1Animating, setSlot1Animating] = useState(false);
+  const [slot2Animating, setSlot2Animating] = useState(false);
+  const [slot3Animating, setSlot3Animating] = useState(false);
+  const [slot1Display, setSlot1Display] = useState<Weapon | null>(null);
+  const [slot2Display, setSlot2Display] = useState<Weapon | null>(null);
+  const [slot3Display, setSlot3Display] = useState<Weapon | null>(null);
+  const slotTimeoutRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  const startSlotAnimation = useCallback((slot: 1 | 2 | 3) => {
+    if (animationCandidates.length === 0) return;
+
+    const setAnimating = slot === 1 ? setSlot1Animating : slot === 2 ? setSlot2Animating : setSlot3Animating;
+    const setDisplay = slot === 1 ? setSlot1Display : slot === 2 ? setSlot2Display : setSlot3Display;
+
+    setAnimating(true);
+
+    // Clear any previous timeouts for this slot
+    slotTimeoutRefs.current.forEach(clearTimeout);
+    slotTimeoutRefs.current = [];
+
+    const duration = 1500;
+    const totalSteps = 20;
+    let elapsed = 0;
+
+    for (let i = 0; i < totalSteps; i++) {
+      const stepDuration = (duration / totalSteps) * (1 + (i / totalSteps) * 3);
+      elapsed += stepDuration;
+
+      const timeout = setTimeout(() => {
+        const randomIndex = Math.floor(Math.random() * animationCandidates.length);
+        setDisplay(animationCandidates[randomIndex]);
+
+        if (i === totalSteps - 1) {
+          setTimeout(() => {
+            executeSlotGacha(slot);
+            setAnimating(false);
+          }, 100);
+        }
+      }, elapsed);
+
+      slotTimeoutRefs.current.push(timeout);
+    }
+  }, [animationCandidates, executeSlotGacha]);
+
   /** 演出中は仮表示、完了後は確定結果を表示 */
-  const shownSlot1 = isAnimating ? displayItem : slot1Result;
-  const shownSlot2 = isAnimating ? displayItem : slot2Result;
+  const shownSlot1 = isAnimating ? displayItem : slot1Animating ? slot1Display : slot1Result;
+  const shownSlot2 = isAnimating ? displayItem : slot2Animating ? slot2Display : slot2Result;
+  const shownSlot3 = slot3Animating ? slot3Display : slot3Result;
 
   return (
     <div className={styles.container}>
@@ -100,44 +147,44 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
 
         <button
           type="button"
-          className={styles.slotButton}
-          onClick={() => executeSlotGacha(1)}
-          disabled={isSlot1Empty}
+          className={`${styles.slotButton} ${slot1Animating ? styles.spinning : ''}`}
+          onClick={() => startSlotAnimation(1)}
+          disabled={isSlot1Empty || isAnimating || slot1Animating}
           aria-label="スロット1 ガチャ"
         >
-          スロット1 ガチャ
+          {slot1Animating ? '抽選中...' : 'スロット1 ガチャ'}
         </button>
 
         <button
           type="button"
-          className={styles.slotButton}
-          onClick={() => executeSlotGacha(2)}
-          disabled={isSlot2Empty}
+          className={`${styles.slotButton} ${slot2Animating ? styles.spinning : ''}`}
+          onClick={() => startSlotAnimation(2)}
+          disabled={isSlot2Empty || isAnimating || slot2Animating}
           aria-label="スロット2 ガチャ"
         >
-          スロット2 ガチャ
+          {slot2Animating ? '抽選中...' : 'スロット2 ガチャ'}
         </button>
 
         {showSlot3 && (
           <button
             type="button"
-            className={styles.slotButton}
-            onClick={() => executeSlotGacha(3)}
-            disabled={isSlot3Empty}
+            className={`${styles.slotButton} ${slot3Animating ? styles.spinning : ''}`}
+            onClick={() => startSlotAnimation(3)}
+            disabled={isSlot3Empty || isAnimating || slot3Animating}
             aria-label="スロット3 ガチャ"
           >
-            スロット3 ガチャ
+            {slot3Animating ? '抽選中...' : 'スロット3 ガチャ'}
           </button>
         )}
       </div>
 
       <ErrorMessage message={error} />
 
-      <div className={`${styles.resultSection} ${isAnimating ? styles.animating : ''}`}>
+      <div className={`${styles.resultSection} ${(isAnimating || slot1Animating || slot2Animating || slot3Animating) ? styles.animating : ''}`}>
         <WeaponResult
           slot1Result={shownSlot1}
           slot2Result={shownSlot2}
-          slot3Result={showSlot3 ? slot3Result : undefined}
+          slot3Result={showSlot3 ? shownSlot3 : undefined}
         />
       </div>
 
@@ -146,6 +193,7 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
           <WeaponSlotLineup
             slotNumber={1}
             checks={slot1Checks}
+            carePackageFlags={carePackageFlags}
             onToggleWeapon={(weaponId) => toggleWeapon(1, weaponId)}
             onToggleCategory={(category) => toggleCategory(1, category)}
           />
@@ -153,6 +201,7 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
           <WeaponSlotLineup
             slotNumber={2}
             checks={slot2Checks}
+            carePackageFlags={carePackageFlags}
             onToggleWeapon={(weaponId) => toggleWeapon(2, weaponId)}
             onToggleCategory={(category) => toggleCategory(2, category)}
           />
@@ -162,6 +211,7 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
           <WeaponSlotLineup
             slotNumber={3}
             checks={slot3Checks}
+            carePackageFlags={carePackageFlags}
             onToggleWeapon={(weaponId) => toggleWeapon(3, weaponId)}
             onToggleCategory={(category) => toggleCategory(3, category)}
           />

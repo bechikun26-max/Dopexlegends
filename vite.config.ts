@@ -9,4 +9,7 @@ export default defineConfig({
       localsConvention: 'camelCase',
     },
   },
+  server: {
+    // SPAフォールバック: /bo などのパスでもindex.htmlを返す（Vite devサーバーはデフォルトで対応）
+  },
 })

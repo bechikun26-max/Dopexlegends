@@ -1,19 +1,26 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { AppProvider, useAppContext } from './context/AppContext';
 import { LegendGacha } from './components/legend/LegendGacha';
 import { PartyGacha } from './components/legend/PartyGacha';
 import { WeaponGacha } from './components/weapon/WeaponGacha';
 import { RuleRoulette } from './components/roulette/RuleRoulette';
 import { UserProfile } from './components/profile/UserProfile';
+import { AdminPanel } from './components/admin/AdminPanel';
+import { AdminLogin } from './components/admin/AdminLogin';
 import styles from './App.module.css';
 
 type Page = 'legend' | 'weapon' | 'roulette' | 'profile';
 
+/** パスが /bo かどうかを判定 */
+function isBOPath(): boolean {
+  return window.location.pathname === '/bo' || window.location.pathname === '/bo/';
+}
+
+/** 通常ユーザー向けアプリ */
 function AppContent() {
   const [currentPage, setCurrentPage] = useState<Page>('legend');
   const { legendGacha, weaponGacha, effectiveLineup } = useAppContext();
 
-  // Check if Ballistic is selected for showing weapon slot 3
   const showSlot3 = legendGacha.result?.hasThirdWeaponSlot === true;
 
   return (
@@ -84,10 +91,34 @@ function AppContent() {
   );
 }
 
+/** BO（バックオフィス）ページ */
+function BOContent() {
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    () => sessionStorage.getItem('bo-authenticated') === 'true'
+  );
+
+  const handleAuth = useCallback(() => {
+    setIsAuthenticated(true);
+  }, []);
+
+  return (
+    <div className={styles.app}>
+      <header className={styles.header}>
+        <h1 className={styles.title}>Apex Gacha System — BO</h1>
+      </header>
+      <main className={styles.content}>
+        {isAuthenticated ? <AdminPanel /> : <AdminLogin onAuthenticated={handleAuth} />}
+      </main>
+    </div>
+  );
+}
+
 export default function App() {
+  const isBO = isBOPath();
+
   return (
     <AppProvider>
-      <AppContent />
+      {isBO ? <BOContent /> : <AppContent />}
     </AppProvider>
   );
 }

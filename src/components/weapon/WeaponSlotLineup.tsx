@@ -9,6 +9,7 @@ import styles from './WeaponSlotLineup.module.css';
 interface WeaponSlotLineupProps {
   slotNumber: SlotNumber;
   checks: Map<string, boolean>;
+  carePackageFlags: Map<string, boolean>;
   onToggleWeapon: (weaponId: string) => void;
   onToggleCategory: (category: WeaponCategory) => void;
 }
@@ -24,20 +25,20 @@ const CATEGORY_ORDER: { category: WeaponCategory; label: string }[] = [
   { category: 'Sniper', label: 'スナイパーライフル' },
 ];
 
-export function WeaponSlotLineup({ slotNumber, checks, onToggleWeapon, onToggleCategory }: WeaponSlotLineupProps) {
+export function WeaponSlotLineup({ slotNumber, checks, carePackageFlags, onToggleWeapon, onToggleCategory }: WeaponSlotLineupProps) {
   const [collapsed, setCollapsed] = useState<Set<WeaponCategory>>(new Set());
 
-  /** カテゴリごとにグループ化された武器（checksに含まれる＝非ケアパッケージ武器のみ） */
+  /** カテゴリごとにグループ化された武器（ケアパッケージ武器は除外） */
   const weaponsByCategory = useMemo(() => {
     const grouped = new Map<WeaponCategory, typeof WEAPONS>();
     for (const { category } of CATEGORY_ORDER) {
       const categoryWeapons = WEAPONS.filter(
-        (w) => w.category === category && checks.has(w.id)
+        (w) => w.category === category && checks.has(w.id) && carePackageFlags.get(w.id) !== true
       );
       grouped.set(category, categoryWeapons);
     }
     return grouped;
-  }, [checks]);
+  }, [checks, carePackageFlags]);
 
   const toggleCollapse = (category: WeaponCategory) => {
     setCollapsed((prev) => {

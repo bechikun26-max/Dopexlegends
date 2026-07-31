@@ -28,9 +28,36 @@ const AMMO_LABELS: Record<AmmoType, string> = {
   Arrow: 'アロー',
 };
 
+/** 弾薬種類ごとの背景色 */
+const AMMO_COLORS: Record<string, string> = {
+  Shotgun: '#8b2020',
+  Light: '#8b5e20',
+  Heavy: '#1a5c4a',
+  Energy: '#4a5c0a',
+  Sniper: '#2a2a6b',
+  Arrow: '#6b5a0a',
+};
+
+/** 武器の弾薬種類に応じた背景スタイルを返す */
+function getAmmoBackground(weapon: Weapon): React.CSSProperties {
+  if (weapon.ammoTypes.length > 1) {
+    // C.A.R. など複数弾薬の場合は斜めグラデーション
+    return {
+      background: `linear-gradient(135deg, ${AMMO_COLORS[weapon.ammoTypes[0]]} 50%, ${AMMO_COLORS[weapon.ammoTypes[1]]} 50%)`,
+    };
+  }
+  return {
+    backgroundColor: AMMO_COLORS[weapon.ammoTypes[0]] || '#16213e',
+  };
+}
+
 function SlotResult({ weapon, slotNumber }: { weapon: Weapon; slotNumber: number }) {
   return (
-    <div className={styles.slotResult} aria-label={`スロット${slotNumber}の結果`}>
+    <div
+      className={styles.slotResult}
+      style={getAmmoBackground(weapon)}
+      aria-label={`スロット${slotNumber}の結果`}
+    >
       <span className={styles.slotLabel}>スロット{slotNumber}</span>
       <img
         src={weapon.imagePath}
