@@ -46,29 +46,29 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
   const wcSlot = roulette.weaponCategorySlot;
   const atSlot = roulette.ammoTypeSlot;
 
-  /** スロット1のハイライト対象 (WeaponCategory縛り適用時) */
+  /** スロット1のハイライト対象 (WeaponCategory縛り適用時 & チェック済み) */
   const slot1HighlightedIds = useMemo(() => {
     if (!wcSlot.isApplied || !wcSlot.currentResult) return undefined;
     const ids = new Set<string>();
     for (const w of WEAPONS) {
-      if (w.category === wcSlot.currentResult.filterValue) {
+      if (w.category === wcSlot.currentResult.filterValue && slot1Checks.get(w.id) === true) {
         ids.add(w.id);
       }
     }
     return ids;
-  }, [wcSlot.isApplied, wcSlot.currentResult]);
+  }, [wcSlot.isApplied, wcSlot.currentResult, slot1Checks]);
 
-  /** スロット2のハイライト対象 (AmmoType縛り適用時) */
+  /** スロット2のハイライト対象 (AmmoType縛り適用時 & チェック済み) */
   const slot2HighlightedIds = useMemo(() => {
     if (!atSlot.isApplied || !atSlot.currentResult) return undefined;
     const ids = new Set<string>();
     for (const w of WEAPONS) {
-      if (w.ammoTypes.includes(atSlot.currentResult.filterValue as any)) {
+      if (w.ammoTypes.includes(atSlot.currentResult.filterValue as any) && slot2Checks.get(w.id) === true) {
         ids.add(w.id);
       }
     }
     return ids;
-  }, [atSlot.isApplied, atSlot.currentResult]);
+  }, [atSlot.isApplied, atSlot.currentResult, slot2Checks]);
 
   /** 非ケアパッケージ武器のみ（演出候補） */
   const animationCandidates = useMemo(

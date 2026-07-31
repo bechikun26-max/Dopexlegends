@@ -33,17 +33,17 @@ export function LegendGacha() {
   // ルーレット結果からハイライトを計算
   const lcSlot = roulette.legendClassSlot;
 
-  /** レジェンドクラス縛り適用時のハイライト対象ID */
+  /** レジェンドクラス縛り適用時のハイライト対象ID (チェック済みのみ) */
   const legendHighlightedIds = useMemo(() => {
     if (!lcSlot.isApplied || !lcSlot.currentResult) return undefined;
     const ids = new Set<string>();
     for (const l of LEGENDS) {
-      if (l.class === lcSlot.currentResult.filterValue) {
+      if (l.class === lcSlot.currentResult.filterValue && checks.get(l.id) === true) {
         ids.add(l.id);
       }
     }
     return ids;
-  }, [lcSlot.isApplied, lcSlot.currentResult]);
+  }, [lcSlot.isApplied, lcSlot.currentResult, checks]);
 
   const [partySize, setPartySize] = useState<number>(3);
   const [isAnimating, setIsAnimating] = useState(false);
