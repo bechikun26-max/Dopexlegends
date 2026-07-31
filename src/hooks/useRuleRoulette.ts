@@ -229,6 +229,52 @@ export function useRuleRoulette({
   }, [lcEnabled, wcEnabled, atEnabled, spinLegendClass, spinWeaponCategory, spinAmmoType]);
 
   // === Build slot objects ===
+
+  /** レジェンドクラス縛りを無効にしたとき全選択に戻す */
+  const toggleEnabledLegendClass = useCallback((on: boolean) => {
+    setLcEnabled(on);
+    if (!on) {
+      // 全レジェンドをチェックONに戻す
+      const allChecked = new Map<string, boolean>();
+      for (const l of LEGENDS) { allChecked.set(l.id, true); }
+      setLegendChecks(allChecked);
+      // 結果もクリア
+      setLcResult(null);
+      setLcApplied(false);
+      setLcSnapshot(null);
+    }
+  }, [setLcEnabled, setLegendChecks, setLcResult, setLcApplied, setLcSnapshot]);
+
+  /** 武器カテゴリ縛りを無効にしたときスロット1を全選択に戻す */
+  const toggleEnabledWeaponCategory = useCallback((on: boolean) => {
+    setWcEnabled(on);
+    if (!on) {
+      const allChecked = new Map<string, boolean>();
+      for (const w of WEAPONS) {
+        if (!w.isCarePackage) { allChecked.set(w.id, true); }
+      }
+      setWeaponSlot1Checks(allChecked);
+      setWcResult(null);
+      setWcApplied(false);
+      setWcSnapshot(null);
+    }
+  }, [setWcEnabled, setWeaponSlot1Checks, setWcResult, setWcApplied, setWcSnapshot]);
+
+  /** 弾薬縛りを無効にしたときスロット2を全選択に戻す */
+  const toggleEnabledAmmoType = useCallback((on: boolean) => {
+    setAtEnabled(on);
+    if (!on) {
+      const allChecked = new Map<string, boolean>();
+      for (const w of WEAPONS) {
+        if (!w.isCarePackage) { allChecked.set(w.id, true); }
+      }
+      setWeaponSlot2Checks(allChecked);
+      setAtResult(null);
+      setAtApplied(false);
+      setAtSnapshot(null);
+    }
+  }, [setAtEnabled, setWeaponSlot2Checks, setAtResult, setAtApplied, setAtSnapshot]);
+
   const legendClassSlot: RouletteSlot = useMemo(() => ({
     currentResult: lcResult,
     isApplied: lcApplied,
@@ -238,8 +284,8 @@ export function useRuleRoulette({
     spinSlot: spinLegendClass,
     resetSlot: resetLegendClass,
     toggleApply: toggleApplyLegendClass,
-    toggleEnabled: (on: boolean) => setLcEnabled(on),
-  }), [lcResult, lcApplied, lcEnabled, spinLegendClass, resetLegendClass, toggleApplyLegendClass, setLcEnabled]);
+    toggleEnabled: toggleEnabledLegendClass,
+  }), [lcResult, lcApplied, lcEnabled, spinLegendClass, resetLegendClass, toggleApplyLegendClass, toggleEnabledLegendClass]);
 
   const weaponCategorySlot: RouletteSlot = useMemo(() => ({
     currentResult: wcResult,
@@ -250,8 +296,8 @@ export function useRuleRoulette({
     spinSlot: spinWeaponCategory,
     resetSlot: resetWeaponCategory,
     toggleApply: toggleApplyWeaponCategory,
-    toggleEnabled: (on: boolean) => setWcEnabled(on),
-  }), [wcResult, wcApplied, wcEnabled, spinWeaponCategory, resetWeaponCategory, toggleApplyWeaponCategory, setWcEnabled]);
+    toggleEnabled: toggleEnabledWeaponCategory,
+  }), [wcResult, wcApplied, wcEnabled, spinWeaponCategory, resetWeaponCategory, toggleApplyWeaponCategory, toggleEnabledWeaponCategory]);
 
   const ammoTypeSlot: RouletteSlot = useMemo(() => ({
     currentResult: atResult,
@@ -262,8 +308,8 @@ export function useRuleRoulette({
     spinSlot: spinAmmoType,
     resetSlot: resetAmmoType,
     toggleApply: toggleApplyAmmoType,
-    toggleEnabled: (on: boolean) => setAtEnabled(on),
-  }), [atResult, atApplied, atEnabled, spinAmmoType, resetAmmoType, toggleApplyAmmoType, setAtEnabled]);
+    toggleEnabled: toggleEnabledAmmoType,
+  }), [atResult, atApplied, atEnabled, spinAmmoType, resetAmmoType, toggleApplyAmmoType, toggleEnabledAmmoType]);
 
   return {
     legendClassSlot,
