@@ -10,7 +10,6 @@ interface LegendLineupProps {
   onToggleLegend: (legendId: string) => void;
   onToggleClass: (className: LegendClass) => void;
   onToggleAll: () => void;
-  highlightedIds?: Set<string>;
 }
 
 /** クラスの表示順序と日本語名 */
@@ -22,7 +21,7 @@ const CLASS_ORDER: { class: LegendClass; label: string }[] = [
   { class: 'Controller', label: 'コントローラー' },
 ];
 
-export function LegendLineup({ checks, onToggleLegend, onToggleClass, onToggleAll, highlightedIds }: LegendLineupProps) {
+export function LegendLineup({ checks, onToggleLegend, onToggleClass, onToggleAll }: LegendLineupProps) {
   const selectAllRef = useRef<HTMLInputElement>(null);
 
   /** クラスごとにグループ化されたレジェンド */
@@ -85,7 +84,6 @@ export function LegendLineup({ checks, onToggleLegend, onToggleClass, onToggleAl
               checks={checks}
               onChange={onToggleLegend}
               groupLabel={`${label}クラスのレジェンド`}
-              highlightedIds={highlightedIds}
             />
           </div>
         );

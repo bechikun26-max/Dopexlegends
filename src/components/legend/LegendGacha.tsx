@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useMemo } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useAppContext } from '../../context/AppContext';
 import { LEGENDS } from '../../data/legends';
 import type { Legend } from '../../types';
@@ -27,23 +27,8 @@ function mapErrorMessage(error: string | null): string | null {
  * パーティ人数選択、ガチャ実行ボタン、結果表示、ラインナップ制御を統合する。
  */
 export function LegendGacha() {
-  const { legendGacha, effectiveLineup, roulette } = useAppContext();
+  const { legendGacha, effectiveLineup } = useAppContext();
   const { checks, partyResult, error, toggleLegend, toggleClass, toggleAll, executePartyGacha } = legendGacha;
-
-  // ルーレット結果からハイライトを計算
-  const lcSlot = roulette.legendClassSlot;
-
-  /** レジェンドクラス縛り適用時のハイライト対象ID (チェック済みのみ) */
-  const legendHighlightedIds = useMemo(() => {
-    if (!lcSlot.isApplied || !lcSlot.currentResult) return undefined;
-    const ids = new Set<string>();
-    for (const l of LEGENDS) {
-      if (l.class === lcSlot.currentResult.filterValue && checks.get(l.id) === true) {
-        ids.add(l.id);
-      }
-    }
-    return ids;
-  }, [lcSlot.isApplied, lcSlot.currentResult, checks]);
 
   const [partySize, setPartySize] = useState<number>(3);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -156,7 +141,6 @@ export function LegendGacha() {
             onToggleLegend={toggleLegend}
             onToggleClass={toggleClass}
             onToggleAll={toggleAll}
-            highlightedIds={legendHighlightedIds}
           />
         </CollapsibleSection>
       </div>

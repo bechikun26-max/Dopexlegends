@@ -13,8 +13,6 @@ interface WeaponSlotLineupProps {
   onToggleWeapon: (weaponId: string) => void;
   onToggleCategory: (category: WeaponCategory) => void;
   onSetChecks: (checks: Map<string, boolean>) => void;
-  /** ルーレットで自動チェックされた武器IDのセット（赤枠ハイライト） */
-  highlightedIds?: Set<string>;
 }
 
 /** カテゴリの表示順序と日本語名 */
@@ -28,7 +26,7 @@ const CATEGORY_ORDER: { category: WeaponCategory; label: string }[] = [
   { category: 'Sniper', label: 'スナイパーライフル' },
 ];
 
-export function WeaponSlotLineup({ slotNumber, checks, carePackageFlags, onToggleWeapon, onToggleCategory, onSetChecks, highlightedIds }: WeaponSlotLineupProps) {
+export function WeaponSlotLineup({ slotNumber, checks, carePackageFlags, onToggleWeapon, onToggleCategory, onSetChecks }: WeaponSlotLineupProps) {
   const [collapsed, setCollapsed] = useState<Set<WeaponCategory>>(new Set());
   const [includeCarePackage, setIncludeCarePackage] = useState(false);
 
@@ -132,7 +130,6 @@ export function WeaponSlotLineup({ slotNumber, checks, carePackageFlags, onToggl
                 checks={checks}
                 onChange={onToggleWeapon}
                 groupLabel={`${label}カテゴリの武器`}
-                highlightedIds={highlightedIds}
               />
             )}
           </div>

@@ -156,10 +156,3 @@
 .lineupSection {
   margin-top: 1rem;
 }
-
-.highlighted {
-  border: 2px solid #e94560;
-  border-radius: 0.5rem;
-  box-shadow: 0 0 10px rgba(233, 69, 96, 0.3);
-  padding: 1rem;
-}
