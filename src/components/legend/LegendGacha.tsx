@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useAppContext } from '../../context/AppContext';
 import { LEGENDS } from '../../data/legends';
 import type { Legend } from '../../types';
@@ -22,14 +22,10 @@ function mapErrorMessage(error: string | null): string | null {
   }
 }
 
-interface LegendGachaProps {
-  externalTrigger?: number;
-}
-
 /**
  * レジェンドガチャのメインコンポーネント（ピック候補専用）。
  */
-export function LegendGacha({ externalTrigger = 0 }: LegendGachaProps) {
+export function LegendGacha() {
   const { legendGacha, effectiveLineup } = useAppContext();
   const { checks, partyResult, error, toggleLegend, toggleClass, toggleAll, executePartyGacha } = legendGacha;
 
@@ -80,16 +76,6 @@ export function LegendGacha({ externalTrigger = 0 }: LegendGachaProps) {
       timeoutRefs.current.push(timeout);
     }
   }, [isAnimating, partySize, handleExecute]);
-
-  // 外部トリガー（全一括実行）でアニメーション開始（ルーレット完了後）
-  const prevExternalTrigger = useRef(externalTrigger);
-  useEffect(() => {
-    if (externalTrigger !== prevExternalTrigger.current) {
-      prevExternalTrigger.current = externalTrigger;
-      // ルーレット演出(1.5s + 0.1s余裕 = 1.6s)完了後にレジェンドガチャ開始
-      setTimeout(() => startAnimation(), 2000);
-    }
-  }, [externalTrigger, startAnimation]);
 
   /** 演出中は仮表示、完了後は確定結果を表示 */
   const shownMembers = isAnimating ? displayMembers : partyResult;
