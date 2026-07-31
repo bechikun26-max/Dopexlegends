@@ -1,7 +1,6 @@
 import { useMemo, useCallback, useState, useRef } from 'react';
 import { useAppContext } from '../../context/AppContext';
 import { useGachaAnimation } from '../../hooks/useGachaAnimation';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { WEAPONS } from '../../data/weapons';
 import type { Weapon } from '../../types';
 import { WeaponSlotLineup } from './WeaponSlotLineup';
@@ -24,7 +23,7 @@ export interface WeaponGachaProps {
  * Requirements: 4.1, 4.4, 5.1, 5.2, 5.3, 7.1, 7.2, 7.3, 7.4, 7.5
  */
 export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
-  const { weaponGacha } = useAppContext();
+  const { weaponGacha, roulette } = useAppContext();
   const {
     slot1Checks,
     slot2Checks,
@@ -43,35 +42,33 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
     setSlot3Checks,
   } = weaponGacha;
 
-  // Read roulette applied state directly from localStorage
-  const [wcApplied] = useLocalStorage<boolean>('roulette-weaponCategory-applied', false);
-  const [atApplied] = useLocalStorage<boolean>('roulette-ammoType-applied', false);
-  const [wcResult] = useLocalStorage<{ filterValue: string; category: string } | null>('roulette-weaponCategory-result', null);
-  const [atResult] = useLocalStorage<{ filterValue: string; category: string } | null>('roulette-ammoType-result', null);
+  // ルーレット結果からハイライトを計算（AppContextのrouletteから直接取得）
+  const wcSlot = roulette.weaponCategorySlot;
+  const atSlot = roulette.ammoTypeSlot;
 
   /** スロット1のハイライト対象 (WeaponCategory縛り適用時) */
   const slot1HighlightedIds = useMemo(() => {
-    if (!wcApplied || !wcResult) return undefined;
+    if (!wcSlot.isApplied || !wcSlot.currentResult) return undefined;
     const ids = new Set<string>();
     for (const w of WEAPONS) {
-      if (w.category === wcResult.filterValue) {
+      if (w.category === wcSlot.currentResult.filterValue) {
         ids.add(w.id);
       }
     }
     return ids;
-  }, [wcApplied, wcResult]);
+  }, [wcSlot.isApplied, wcSlot.currentResult]);
 
   /** スロット2のハイライト対象 (AmmoType縛り適用時) */
   const slot2HighlightedIds = useMemo(() => {
-    if (!atApplied || !atResult) return undefined;
+    if (!atSlot.isApplied || !atSlot.currentResult) return undefined;
     const ids = new Set<string>();
     for (const w of WEAPONS) {
-      if (w.ammoTypes.includes(atResult.filterValue as any)) {
+      if (w.ammoTypes.includes(atSlot.currentResult.filterValue as any)) {
         ids.add(w.id);
       }
     }
     return ids;
-  }, [atApplied, atResult]);
+  }, [atSlot.isApplied, atSlot.currentResult]);
 
   /** 非ケアパッケージ武器のみ（演出候補） */
   const animationCandidates = useMemo(

@@ -1,6 +1,5 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useMemo } from 'react';
 import { useAppContext } from '../../context/AppContext';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { LEGENDS } from '../../data/legends';
 import type { Legend } from '../../types';
 import { LegendLineup } from './LegendLineup';
@@ -28,24 +27,23 @@ function mapErrorMessage(error: string | null): string | null {
  * パーティ人数選択、ガチャ実行ボタン、結果表示、ラインナップ制御を統合する。
  */
 export function LegendGacha() {
-  const { legendGacha, effectiveLineup } = useAppContext();
+  const { legendGacha, effectiveLineup, roulette } = useAppContext();
   const { checks, partyResult, error, toggleLegend, toggleClass, toggleAll, executePartyGacha } = legendGacha;
 
-  // Read roulette applied state directly from localStorage
-  const [lcApplied] = useLocalStorage<boolean>('roulette-legendClass-applied', false);
-  const [lcResult] = useLocalStorage<{ filterValue: string } | null>('roulette-legendClass-result', null);
+  // ルーレット結果からハイライトを計算
+  const lcSlot = roulette.legendClassSlot;
 
   /** レジェンドクラス縛り適用時のハイライト対象ID */
-  const legendHighlightedIds = (() => {
-    if (!lcApplied || !lcResult) return undefined;
+  const legendHighlightedIds = useMemo(() => {
+    if (!lcSlot.isApplied || !lcSlot.currentResult) return undefined;
     const ids = new Set<string>();
     for (const l of LEGENDS) {
-      if (l.class === lcResult.filterValue) {
+      if (l.class === lcSlot.currentResult.filterValue) {
         ids.add(l.id);
       }
     }
     return ids;
-  })();
+  }, [lcSlot.isApplied, lcSlot.currentResult]);
 
   const [partySize, setPartySize] = useState<number>(3);
   const [isAnimating, setIsAnimating] = useState(false);
