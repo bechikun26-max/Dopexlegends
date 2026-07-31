@@ -14,15 +14,21 @@ interface CheckboxGroupProps {
   groupLabel?: string;
   /** 無効化されるアイテムIDのセット（プロフィール未所持等） */
   disabledIds?: Set<string>;
+  /** 動的ケアパケフラグ（localStorageから取得したもの） */
+  carePackageFlags?: Map<string, boolean>;
 }
 
-export function CheckboxGroup({ items, checks, onChange, groupLabel, disabledIds }: CheckboxGroupProps) {
+export function CheckboxGroup({ items, checks, onChange, groupLabel, disabledIds, carePackageFlags }: CheckboxGroupProps) {
   return (
     <div className={styles.group} role="group" aria-label={groupLabel}>
       {groupLabel && <span className={styles.groupLabel}>{groupLabel}</span>}
       <div className={styles.items}>
         {items.map((item) => {
           const isDisabled = disabledIds?.has(item.id) ?? false;
+          // 動的carePackageFlagsがあればそれを優先、なければ静的isCarePackageを使用
+          const isCarePackage = carePackageFlags
+            ? (carePackageFlags.get(item.id) === true)
+            : (item.isCarePackage ?? false);
           return (
             <label
               key={item.id}
@@ -37,7 +43,7 @@ export function CheckboxGroup({ items, checks, onChange, groupLabel, disabledIds
               {item.imagePath && (
                 <img src={item.imagePath} alt={item.name} className={styles.image} />
               )}
-              <span className={`${styles.name} ${item.isCarePackage ? styles.carePackageName : ''}`}>
+              <span className={`${styles.name} ${isCarePackage ? styles.carePackageName : ''}`}>
                 {item.name}
               </span>
             </label>

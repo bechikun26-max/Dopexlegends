@@ -130,6 +130,7 @@ export function WeaponSlotLineup({ slotNumber, checks, carePackageFlags, onToggl
                 checks={checks}
                 onChange={onToggleWeapon}
                 groupLabel={`${label}カテゴリの武器`}
+                carePackageFlags={carePackageFlags}
               />
             )}
           </div>
