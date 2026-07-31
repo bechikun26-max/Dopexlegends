@@ -85,6 +85,16 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
     1500
   );
 
+  // --- スリングガチャ用の独自結果管理 ---
+  const [slingResult, setSlingResult] = useState<Weapon | null>(slot3Result);
+
+  /** スリングガチャ実行: ケアパケ以外の全武器からランダム1つ */
+  const executeSlingGacha = useCallback(() => {
+    if (animationCandidates.length === 0) return;
+    const randomIndex = Math.floor(Math.random() * animationCandidates.length);
+    setSlingResult(animationCandidates[randomIndex]);
+  }, [animationCandidates]);
+
   // --- 個別スロットアニメーション ---
   const [slot1Animating, setSlot1Animating] = useState(false);
   const [slot2Animating, setSlot2Animating] = useState(false);
@@ -120,7 +130,12 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
 
         if (i === totalSteps - 1) {
           setTimeout(() => {
-            executeSlotGacha(slot);
+            if (slot === 3) {
+              // スリングはケアパケ以外全武器からランダム
+              executeSlingGacha();
+            } else {
+              executeSlotGacha(slot);
+            }
             setAnimating(false);
           }, 100);
         }
@@ -133,7 +148,7 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
   /** 演出中は仮表示、完了後は確定結果を表示 */
   const shownSlot1 = isAnimating ? displayItem : slot1Animating ? slot1Display : slot1Result;
   const shownSlot2 = isAnimating ? displayItem : slot2Animating ? slot2Display : slot2Result;
-  const shownSlot3 = slot3Animating ? slot3Display : slot3Result;
+  const shownSlot3 = slot3Animating ? slot3Display : slingResult;
 
   return (
     <div className={styles.container}>
