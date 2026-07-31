@@ -31,12 +31,12 @@ export const WEAPONS: Weapon[] = [
   { id: 'spitfire', name: 'スピットファイア', category: 'LMG', ammoTypes: ['Light'], imagePath: '/images/weapons/spitfire.png', isCarePackage: false },
   { id: 'devotion', name: 'ディヴォーション', category: 'LMG', ammoTypes: ['Energy'], imagePath: '/images/weapons/devotion.png', isCarePackage: false },
   { id: 'rampage', name: 'ランページ', category: 'LMG', ammoTypes: ['Heavy'], imagePath: '/images/weapons/rampage.png', isCarePackage: false },
-  { id: 'l-star', name: 'L-スター', category: 'LMG', ammoTypes: ['Energy'], imagePath: '/images/weapons/l-star.png', isCarePackage: false },
+  { id: 'l-star', name: 'L-スター', category: 'LMG', ammoTypes: ['Energy'], imagePath: '/images/weapons/l-star.png', isCarePackage: true },
 
   // Marksman (4丁)
   { id: 'g7-scout', name: 'G7スカウト', category: 'Marksman', ammoTypes: ['Light'], imagePath: '/images/weapons/g7-scout.png', isCarePackage: false },
   { id: 'triple-take', name: 'トリプルテイク', category: 'Marksman', ammoTypes: ['Energy'], imagePath: '/images/weapons/triple-take.png', isCarePackage: false },
-  { id: '30-30-repeater', name: '30-30リピーター', category: 'Marksman', ammoTypes: ['Heavy'], imagePath: '/images/weapons/30-30-repeater.png', isCarePackage: false },
+  { id: '30-30-repeater', name: '30-30リピーター', category: 'Marksman', ammoTypes: ['Heavy'], imagePath: '/images/weapons/30-30-repeater.png', isCarePackage: true },
   { id: 'bocek', name: 'ボセック', category: 'Marksman', ammoTypes: ['Arrow'], imagePath: '/images/weapons/bocek.png', isCarePackage: false },
 
   // Sniper (4丁)
