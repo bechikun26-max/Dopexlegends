@@ -23,7 +23,7 @@ function AppContent() {
   return (
     <div className={styles.app}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Apex Gacha System</h1>
+        <h1 className={styles.title}>DopexLegends</h1>
         <button
           type="button"
           className={styles.profileButton}
@@ -90,7 +90,7 @@ function BOContent() {
   return (
     <div className={styles.app}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Apex Gacha System — BO</h1>
+        <h1 className={styles.title}>DopexLegends — BO</h1>
       </header>
       <main className={styles.content}>
         {isAuthenticated ? <AdminPanel /> : <AdminLogin onAuthenticated={handleAuth} />}
