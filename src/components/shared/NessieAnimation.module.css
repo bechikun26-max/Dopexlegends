@@ -1,0 +1,20 @@
+.nessieContainer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none; /* ユーザー操作を妨げない */
+}
+
+.nessieImage {
+  animation: nessieWalk 3s linear forwards;
+}
+
+@keyframes nessieWalk {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100vw);
+  }
+}

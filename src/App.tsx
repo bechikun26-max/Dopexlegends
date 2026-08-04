@@ -6,6 +6,8 @@ import { RuleRoulette } from './components/roulette/RuleRoulette';
 import { UserProfile } from './components/profile/UserProfile';
 import { AdminPanel } from './components/admin/AdminPanel';
 import { AdminLogin } from './components/admin/AdminLogin';
+import { useNessieEasterEgg } from './hooks/useNessieEasterEgg';
+import { NessieAnimation } from './components/shared/NessieAnimation';
 import styles from './App.module.css';
 
 
@@ -19,6 +21,16 @@ function AppContent() {
   const { legendGacha, weaponGacha } = useAppContext();
   const showSlot3 = legendGacha.partyResult?.some(l => l.hasThirdWeaponSlot) === true;
   const [showProfile, setShowProfile] = useState(false);
+
+  const { isPlaying, onAnimationEnd, animationKey } = useNessieEasterEgg(
+    legendGacha.partyResult,
+    weaponGacha.slot1Checks,
+    weaponGacha.slot2Checks,
+    weaponGacha.carePackageFlags,
+    weaponGacha.slot1Result,
+    weaponGacha.slot2Result,
+    weaponGacha.slot3Result
+  );
 
   return (
     <div className={styles.app}>
@@ -73,6 +85,8 @@ function AppContent() {
           <WeaponGacha showSlot3={showSlot3} />
         </div>
       </main>
+
+      <NessieAnimation isPlaying={isPlaying} onAnimationEnd={onAnimationEnd} key={animationKey} />
     </div>
   );
 }
