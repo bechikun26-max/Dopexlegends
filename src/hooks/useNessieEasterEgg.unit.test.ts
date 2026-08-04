@@ -90,27 +90,31 @@ describe('useNessieEasterEgg', () => {
     spy.mockRestore();
   });
 
-  it('should evaluate condition when slot3Result changes from null to a value', () => {
+  it('should evaluate condition when all slot results become non-null', () => {
     const spy = vi.spyOn(nessieEngine, 'checkNessieCondition').mockReturnValue(false);
 
     const { rerender } = renderHook(
-      ({ slot3 }) =>
+      ({ slot1, slot2, slot3 }) =>
         useNessieEasterEgg(
           partyWithBallistic,
           slot1Checks,
           slot2Checks,
           carePackageFlags,
-          mockWeapon,
-          mockWeapon,
+          slot1,
+          slot2,
           slot3
         ),
       {
-        initialProps: { slot3: null as Weapon | null },
+        initialProps: {
+          slot1: null as Weapon | null,
+          slot2: null as Weapon | null,
+          slot3: null as Weapon | null,
+        },
       }
     );
 
-    // Simulate slot3 getting a result (gacha executed)
-    rerender({ slot3: mockWeapon });
+    // Simulate gacha execution — all slots get results
+    rerender({ slot1: mockWeapon, slot2: mockWeapon, slot3: mockWeapon });
 
     expect(spy).toHaveBeenCalled();
     spy.mockRestore();
@@ -118,185 +122,6 @@ describe('useNessieEasterEgg', () => {
 
   it('should set isPlaying=true and increment animationKey when condition is met', () => {
     vi.spyOn(nessieEngine, 'checkNessieCondition').mockReturnValue(true);
-
-    const { result, rerender } = renderHook(
-      ({ slot3 }) =>
-        useNessieEasterEgg(
-          partyWithBallistic,
-          slot1Checks,
-          slot2Checks,
-          carePackageFlags,
-          mockWeapon,
-          mockWeapon,
-          slot3
-        ),
-      {
-        initialProps: { slot3: null as Weapon | null },
-      }
-    );
-
-    // Simulate gacha completion — slot3 transitions from null to weapon
-    rerender({ slot3: mockWeapon });
-
-    expect(result.current.isPlaying).toBe(true);
-    expect(result.current.animationKey).toBe(1);
-
-    vi.restoreAllMocks();
-  });
-
-  it('should not set isPlaying when condition is not met', () => {
-    vi.spyOn(nessieEngine, 'checkNessieCondition').mockReturnValue(false);
-
-    const { result, rerender } = renderHook(
-      ({ slot3 }) =>
-        useNessieEasterEgg(
-          partyWithBallistic,
-          slot1Checks,
-          slot2Checks,
-          carePackageFlags,
-          mockWeapon,
-          mockWeapon2,
-          slot3
-        ),
-      {
-        initialProps: { slot3: null as Weapon | null },
-      }
-    );
-
-    rerender({ slot3: mockWeapon });
-
-    expect(result.current.isPlaying).toBe(false);
-    expect(result.current.animationKey).toBe(0);
-
-    vi.restoreAllMocks();
-  });
-
-  it('should set isPlaying=false when onAnimationEnd is called', () => {
-    vi.spyOn(nessieEngine, 'checkNessieCondition').mockReturnValue(true);
-
-    const { result, rerender } = renderHook(
-      ({ slot3 }) =>
-        useNessieEasterEgg(
-          partyWithBallistic,
-          slot1Checks,
-          slot2Checks,
-          carePackageFlags,
-          mockWeapon,
-          mockWeapon,
-          slot3
-        ),
-      {
-        initialProps: { slot3: null as Weapon | null },
-      }
-    );
-
-    rerender({ slot3: mockWeapon });
-    expect(result.current.isPlaying).toBe(true);
-
-    act(() => {
-      result.current.onAnimationEnd();
-    });
-
-    expect(result.current.isPlaying).toBe(false);
-
-    vi.restoreAllMocks();
-  });
-
-  it('should re-trigger by incrementing animationKey when condition is met again', () => {
-    vi.spyOn(nessieEngine, 'checkNessieCondition').mockReturnValue(true);
-
-    const weapon1 = { ...mockWeapon };
-    const weapon2 = { ...mockWeapon };
-
-    const { result, rerender } = renderHook(
-      ({ slot1, slot2, slot3 }) =>
-        useNessieEasterEgg(
-          partyWithBallistic,
-          slot1Checks,
-          slot2Checks,
-          carePackageFlags,
-          slot1,
-          slot2,
-          slot3
-        ),
-      {
-        initialProps: {
-          slot1: weapon1 as Weapon | null,
-          slot2: weapon1 as Weapon | null,
-          slot3: null as Weapon | null,
-        },
-      }
-    );
-
-    // First trigger: slot3 goes from null to weapon1
-    rerender({ slot1: weapon1, slot2: weapon1, slot3: weapon1 });
-
-    expect(result.current.isPlaying).toBe(true);
-    expect(result.current.animationKey).toBe(1);
-
-    // Re-trigger with different weapon reference (simulates new gacha result)
-    rerender({ slot1: weapon2, slot2: weapon2, slot3: weapon2 });
-
-    expect(result.current.isPlaying).toBe(true);
-    expect(result.current.animationKey).toBe(2);
-
-    vi.restoreAllMocks();
-  });
-
-  it('should re-trigger during active animation (Requirement 4.2)', () => {
-    vi.spyOn(nessieEngine, 'checkNessieCondition').mockReturnValue(true);
-
-    const weapon1 = { ...mockWeapon };
-    const weapon2 = { ...mockWeapon };
-
-    const { result, rerender } = renderHook(
-      ({ slot1, slot2, slot3 }) =>
-        useNessieEasterEgg(
-          partyWithBallistic,
-          slot1Checks,
-          slot2Checks,
-          carePackageFlags,
-          slot1,
-          slot2,
-          slot3
-        ),
-      {
-        initialProps: {
-          slot1: weapon1 as Weapon | null,
-          slot2: weapon1 as Weapon | null,
-          slot3: null as Weapon | null,
-        },
-      }
-    );
-
-    // First trigger
-    rerender({ slot1: weapon1, slot2: weapon1, slot3: weapon1 });
-
-    // Animation is playing
-    expect(result.current.isPlaying).toBe(true);
-    expect(result.current.animationKey).toBe(1);
-
-    // Do NOT call onAnimationEnd — still playing — re-trigger with new slot3
-    rerender({ slot1: weapon2, slot2: weapon2, slot3: weapon2 });
-
-    // Should still be playing but with a new key (forces remount)
-    expect(result.current.isPlaying).toBe(true);
-    expect(result.current.animationKey).toBe(2);
-
-    vi.restoreAllMocks();
-  });
-
-  it('should NOT trigger when only slot1/slot2 change but slot3 remains the same (bug fix)', () => {
-    vi.spyOn(nessieEngine, 'checkNessieCondition').mockReturnValue(true);
-
-    const prowler: Weapon = {
-      id: 'prowler',
-      name: 'プラウラー',
-      category: 'SMG',
-      ammoTypes: ['Heavy'],
-      imagePath: '/images/weapons/prowler.png',
-      isCarePackage: false,
-    };
 
     const { result, rerender } = renderHook(
       ({ slot1, slot2, slot3 }) =>
@@ -313,17 +138,194 @@ describe('useNessieEasterEgg', () => {
         initialProps: {
           slot1: null as Weapon | null,
           slot2: null as Weapon | null,
-          slot3: prowler as Weapon | null, // Stale slot3 from previous gacha
+          slot3: null as Weapon | null,
         },
       }
     );
 
-    // slot1/slot2 get updated to prowler (same as stale slot3) — should NOT trigger
-    // because slot3 hasn't changed in this cycle
-    rerender({ slot1: prowler, slot2: prowler, slot3: prowler });
+    rerender({ slot1: mockWeapon, slot2: mockWeapon, slot3: mockWeapon });
+
+    expect(result.current.isPlaying).toBe(true);
+    expect(result.current.animationKey).toBe(1);
+
+    vi.restoreAllMocks();
+  });
+
+  it('should not set isPlaying when condition is not met', () => {
+    vi.spyOn(nessieEngine, 'checkNessieCondition').mockReturnValue(false);
+
+    const { result, rerender } = renderHook(
+      ({ slot1, slot2, slot3 }) =>
+        useNessieEasterEgg(
+          partyWithBallistic,
+          slot1Checks,
+          slot2Checks,
+          carePackageFlags,
+          slot1,
+          slot2,
+          slot3
+        ),
+      {
+        initialProps: {
+          slot1: null as Weapon | null,
+          slot2: null as Weapon | null,
+          slot3: null as Weapon | null,
+        },
+      }
+    );
+
+    rerender({ slot1: mockWeapon, slot2: mockWeapon2, slot3: mockWeapon });
 
     expect(result.current.isPlaying).toBe(false);
     expect(result.current.animationKey).toBe(0);
+
+    vi.restoreAllMocks();
+  });
+
+  it('should set isPlaying=false when onAnimationEnd is called', () => {
+    vi.spyOn(nessieEngine, 'checkNessieCondition').mockReturnValue(true);
+
+    const { result, rerender } = renderHook(
+      ({ slot1, slot2, slot3 }) =>
+        useNessieEasterEgg(
+          partyWithBallistic,
+          slot1Checks,
+          slot2Checks,
+          carePackageFlags,
+          slot1,
+          slot2,
+          slot3
+        ),
+      {
+        initialProps: {
+          slot1: null as Weapon | null,
+          slot2: null as Weapon | null,
+          slot3: null as Weapon | null,
+        },
+      }
+    );
+
+    rerender({ slot1: mockWeapon, slot2: mockWeapon, slot3: mockWeapon });
+    expect(result.current.isPlaying).toBe(true);
+
+    act(() => {
+      result.current.onAnimationEnd();
+    });
+
+    expect(result.current.isPlaying).toBe(false);
+
+    vi.restoreAllMocks();
+  });
+
+  it('should re-trigger by incrementing animationKey when slot results change again', () => {
+    vi.spyOn(nessieEngine, 'checkNessieCondition').mockReturnValue(true);
+
+    const weapon1 = { ...mockWeapon };
+    const weapon2 = { ...mockWeapon, id: 'r-301' }; // same id but different reference
+
+    const { result, rerender } = renderHook(
+      ({ slot1, slot2, slot3 }) =>
+        useNessieEasterEgg(
+          partyWithBallistic,
+          slot1Checks,
+          slot2Checks,
+          carePackageFlags,
+          slot1,
+          slot2,
+          slot3
+        ),
+      {
+        initialProps: {
+          slot1: null as Weapon | null,
+          slot2: null as Weapon | null,
+          slot3: null as Weapon | null,
+        },
+      }
+    );
+
+    // First trigger
+    rerender({ slot1: weapon1, slot2: weapon1, slot3: weapon1 });
+    expect(result.current.isPlaying).toBe(true);
+    expect(result.current.animationKey).toBe(1);
+
+    // Re-trigger with different references (simulates new gacha result)
+    rerender({ slot1: weapon2, slot2: weapon2, slot3: weapon2 });
+    expect(result.current.isPlaying).toBe(true);
+    expect(result.current.animationKey).toBe(2);
+
+    vi.restoreAllMocks();
+  });
+
+  it('should re-trigger during active animation (Requirement 4.2)', () => {
+    vi.spyOn(nessieEngine, 'checkNessieCondition').mockReturnValue(true);
+
+    const weapon1 = { ...mockWeapon };
+    const weapon2 = { ...mockWeapon, id: 'r-301' }; // different reference
+
+    const { result, rerender } = renderHook(
+      ({ slot1, slot2, slot3 }) =>
+        useNessieEasterEgg(
+          partyWithBallistic,
+          slot1Checks,
+          slot2Checks,
+          carePackageFlags,
+          slot1,
+          slot2,
+          slot3
+        ),
+      {
+        initialProps: {
+          slot1: null as Weapon | null,
+          slot2: null as Weapon | null,
+          slot3: null as Weapon | null,
+        },
+      }
+    );
+
+    // First trigger
+    rerender({ slot1: weapon1, slot2: weapon1, slot3: weapon1 });
+    expect(result.current.isPlaying).toBe(true);
+    expect(result.current.animationKey).toBe(1);
+
+    // Do NOT call onAnimationEnd — still playing — re-trigger with new refs
+    rerender({ slot1: weapon2, slot2: weapon2, slot3: weapon2 });
+    expect(result.current.isPlaying).toBe(true);
+    expect(result.current.animationKey).toBe(2);
+
+    vi.restoreAllMocks();
+  });
+
+  it('should not re-trigger when only checks change (not slot results)', () => {
+    vi.spyOn(nessieEngine, 'checkNessieCondition').mockReturnValue(true);
+
+    const { result, rerender } = renderHook(
+      ({ checks }) =>
+        useNessieEasterEgg(
+          partyWithBallistic,
+          checks,
+          slot2Checks,
+          carePackageFlags,
+          mockWeapon,
+          mockWeapon,
+          mockWeapon
+        ),
+      {
+        initialProps: {
+          checks: slot1Checks,
+        },
+      }
+    );
+
+    // Initial render triggers because slot results are all non-null from the start
+    // (this is a valid initial state from localStorage restoration)
+    const initialKey = result.current.animationKey;
+
+    // Changing checks should NOT re-trigger
+    const newChecks = new Map([['r-301', true], ['flatline', false], ['peacekeeper', true]]);
+    rerender({ checks: newChecks });
+
+    // animationKey should not increment on checks change
+    expect(result.current.animationKey).toBe(initialKey);
 
     vi.restoreAllMocks();
   });

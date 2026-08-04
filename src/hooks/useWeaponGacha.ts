@@ -43,6 +43,7 @@ export interface UseWeaponGachaReturn {
   setSlot1Checks: (checks: Map<string, boolean>) => void;
   setSlot2Checks: (checks: Map<string, boolean>) => void;
   setSlot3Checks: (checks: Map<string, boolean>) => void;
+  setSlot3Result: (result: Weapon | null) => void;
 }
 
 // === Helpers ===
@@ -303,5 +304,6 @@ export function useWeaponGacha(): UseWeaponGachaReturn {
     setSlot1Checks: setSlot1ChecksExternal,
     setSlot2Checks: setSlot2ChecksExternal,
     setSlot3Checks: setSlot3ChecksExternal,
+    setSlot3Result,
   };
 }

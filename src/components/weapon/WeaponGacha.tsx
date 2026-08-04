@@ -39,6 +39,7 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
     carePackageFlags,
     setSlot1Checks,
     setSlot2Checks,
+    setSlot3Result,
   } = weaponGacha;
 
   /** 非ケアパッケージ武器のみ（演出候補） */
@@ -81,8 +82,10 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
   const executeSlingGacha = useCallback(() => {
     if (animationCandidates.length === 0) return;
     const randomIndex = Math.floor(Math.random() * animationCandidates.length);
-    setSlingResult(animationCandidates[randomIndex]);
-  }, [animationCandidates]);
+    const result = animationCandidates[randomIndex];
+    setSlingResult(result);
+    setSlot3Result(result);
+  }, [animationCandidates, setSlot3Result]);
 
   const handleComplete = useCallback(() => {
     executeAllSlotsGacha();
