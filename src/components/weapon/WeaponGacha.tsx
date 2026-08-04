@@ -39,7 +39,6 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
     carePackageFlags,
     setSlot1Checks,
     setSlot2Checks,
-    setSlot3Checks,
   } = weaponGacha;
 
   /** 非ケアパッケージ武器のみ（演出候補） */
