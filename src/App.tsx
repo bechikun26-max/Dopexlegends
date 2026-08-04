@@ -35,7 +35,7 @@ function AppContent() {
   return (
     <div className={styles.app}>
       <header className={styles.header}>
-        <h1 className={styles.title}>DopexLegends</h1>
+        <h1 className={styles.title}>DopexLegends <span className={styles.seasonBadge}>シーズン30対応</span></h1>
         <button
           type="button"
           className={styles.profileButton}

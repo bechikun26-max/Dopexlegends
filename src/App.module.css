@@ -26,6 +26,17 @@
   font-weight: 700;
 }
 
+.seasonBadge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: #e94560;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.25rem;
+  vertical-align: middle;
+  margin-left: 0.5rem;
+}
+
 .profileButton {
   background: none;
   border: 2px solid #2d3748;
