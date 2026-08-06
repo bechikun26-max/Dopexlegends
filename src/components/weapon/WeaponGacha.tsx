@@ -3,6 +3,7 @@ import { useAppContext } from '../../context/AppContext';
 import { useGachaAnimation } from '../../hooks/useGachaAnimation';
 import { WEAPONS } from '../../data/weapons';
 import type { Weapon } from '../../types';
+import { useTranslation } from '../../i18n';
 import { WeaponSlotLineup } from './WeaponSlotLineup';
 import { WeaponResult } from './WeaponResult';
 import { ErrorMessage } from '../shared/ErrorMessage';
@@ -23,6 +24,7 @@ export interface WeaponGachaProps {
  * Requirements: 4.1, 4.4, 5.1, 5.2, 5.3, 7.1, 7.2, 7.3, 7.4, 7.5
  */
 export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
+  const { t } = useTranslation();
   const { weaponGacha } = useAppContext();
   const {
     slot1Checks,
@@ -157,7 +159,7 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.header}>武器ガチャ</h2>
+      <h2 className={styles.header}>{t('weaponGacha.title')}</h2>
 
       <div className={styles.actions}>
         <button
@@ -165,9 +167,9 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
           className={`${styles.executeAllButton} ${isAnimating ? styles.spinning : ''}`}
           onClick={startAnimation}
           disabled={isAllSlotsDisabled || isAnimating}
-          aria-label="全スロットガチャ実行"
+          aria-label={t('weaponGacha.executeAll')}
         >
-          {isAnimating ? '抽選中...' : '全スロットガチャ実行'}
+          {isAnimating ? t('common.drawing') : t('weaponGacha.executeAll')}
         </button>
 
         <button
@@ -175,9 +177,9 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
           className={`${styles.slotButton} ${slot1Animating ? styles.spinning : ''}`}
           onClick={() => startSlotAnimation(1)}
           disabled={isSlot1Empty || isAnimating || slot1Animating}
-          aria-label="スロット1 ガチャ"
+          aria-label={t('weaponGacha.slot1')}
         >
-          {slot1Animating ? '抽選中...' : 'スロット1 ガチャ'}
+          {slot1Animating ? t('common.drawing') : t('weaponGacha.slot1')}
         </button>
 
         <button
@@ -185,9 +187,9 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
           className={`${styles.slotButton} ${slot2Animating ? styles.spinning : ''}`}
           onClick={() => startSlotAnimation(2)}
           disabled={isSlot2Empty || isAnimating || slot2Animating}
-          aria-label="スロット2 ガチャ"
+          aria-label={t('weaponGacha.slot2')}
         >
-          {slot2Animating ? '抽選中...' : 'スロット2 ガチャ'}
+          {slot2Animating ? t('common.drawing') : t('weaponGacha.slot2')}
         </button>
 
         {showSlot3 && (
@@ -196,9 +198,9 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
             className={`${styles.slotButton} ${slot3Animating ? styles.spinning : ''}`}
             onClick={() => startSlotAnimation(3)}
             disabled={isSlot3Empty || isAnimating || slot3Animating}
-            aria-label="スリングガチャ"
+            aria-label={t('weaponGacha.sling')}
           >
-            {slot3Animating ? '抽選中...' : 'スリングガチャ'}
+            {slot3Animating ? t('common.drawing') : t('weaponGacha.sling')}
           </button>
         )}
       </div>
@@ -214,7 +216,7 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
       </div>
 
       <div className={styles.lineupSection}>
-        <CollapsibleSection title="武器ラインナップ設定">
+        <CollapsibleSection title={t('weaponGacha.lineupSettings')}>
           <div className={styles.slotsRow}>
             <WeaponSlotLineup
               slotNumber={1}

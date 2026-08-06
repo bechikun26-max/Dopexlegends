@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from '../../i18n';
 import styles from './AdminLogin.module.css';
 
 // "Momoclo5" の SHA-256 ハッシュ
@@ -17,6 +18,7 @@ interface AdminLoginProps {
 }
 
 export function AdminLogin({ onAuthenticated }: AdminLoginProps) {
+  const { t } = useTranslation();
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isChecking, setIsChecking] = useState(false);
@@ -32,7 +34,7 @@ export function AdminLogin({ onAuthenticated }: AdminLoginProps) {
       sessionStorage.setItem('bo-authenticated', 'true');
       onAuthenticated();
     } else {
-      setError('パスワードが正しくありません');
+      setError(t('admin.wrongPassword'));
       setPassword('');
     }
     setIsChecking(false);
@@ -41,20 +43,20 @@ export function AdminLogin({ onAuthenticated }: AdminLoginProps) {
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <h2 className={styles.title}>🔒 Back Office</h2>
-        <p className={styles.description}>管理者パスワードを入力してください</p>
+        <h2 className={styles.title}>{t('admin.loginTitle')}</h2>
+        <p className={styles.description}>{t('admin.loginDescription')}</p>
         <form onSubmit={handleSubmit} className={styles.form}>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="パスワード"
+            placeholder={t('admin.passwordPlaceholder')}
             className={styles.input}
             autoFocus
             disabled={isChecking}
           />
           <button type="submit" className={styles.button} disabled={isChecking}>
-            {isChecking ? '確認中...' : 'ログイン'}
+            {isChecking ? t('admin.checking') : t('admin.loginButton')}
           </button>
         </form>
         {error && <p className={styles.error}>{error}</p>}

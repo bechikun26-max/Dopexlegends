@@ -2,6 +2,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { LegendLineup } from './LegendLineup';
 import { LEGENDS } from '../../data/legends';
+import { LocaleProvider } from '../../i18n';
+import en from '../../i18n/locales/en.json';
 
 function createAllCheckedMap(): Map<string, boolean> {
   const checks = new Map<string, boolean>();
@@ -11,10 +13,14 @@ function createAllCheckedMap(): Map<string, boolean> {
   return checks;
 }
 
+function renderWithLocale(ui: React.ReactElement) {
+  return render(<LocaleProvider>{ui}</LocaleProvider>);
+}
+
 describe('LegendLineup', () => {
   it('renders all 28 legends as checkboxes', () => {
     const checks = createAllCheckedMap();
-    render(
+    renderWithLocale(
       <LegendLineup
         checks={checks}
         onToggleLegend={vi.fn()}
@@ -24,13 +30,14 @@ describe('LegendLineup', () => {
     );
 
     for (const legend of LEGENDS) {
-      expect(screen.getByLabelText(legend.name)).toBeInTheDocument();
+      const translatedName = en[`legends.${legend.id}` as keyof typeof en];
+      expect(screen.getByLabelText(translatedName)).toBeInTheDocument();
     }
   });
 
   it('renders class group headers', () => {
     const checks = createAllCheckedMap();
-    render(
+    renderWithLocale(
       <LegendLineup
         checks={checks}
         onToggleLegend={vi.fn()}
@@ -39,16 +46,16 @@ describe('LegendLineup', () => {
       />
     );
 
-    expect(screen.getByText('アサルト')).toBeInTheDocument();
-    expect(screen.getByText('スカーミッシャー')).toBeInTheDocument();
-    expect(screen.getByText('リコン')).toBeInTheDocument();
-    expect(screen.getByText('サポート')).toBeInTheDocument();
-    expect(screen.getByText('コントローラー')).toBeInTheDocument();
+    expect(screen.getByText('Assault')).toBeInTheDocument();
+    expect(screen.getByText('Skirmisher')).toBeInTheDocument();
+    expect(screen.getByText('Recon')).toBeInTheDocument();
+    expect(screen.getByText('Support')).toBeInTheDocument();
+    expect(screen.getByText('Controller')).toBeInTheDocument();
   });
 
   it('renders select-all checkbox showing correct count', () => {
     const checks = createAllCheckedMap();
-    render(
+    renderWithLocale(
       <LegendLineup
         checks={checks}
         onToggleLegend={vi.fn()}
@@ -57,14 +64,14 @@ describe('LegendLineup', () => {
       />
     );
 
-    expect(screen.getByText('全選択 (28/28)')).toBeInTheDocument();
+    expect(screen.getByText('Select All (28/28)')).toBeInTheDocument();
   });
 
   it('calls onToggleLegend when individual checkbox clicked', () => {
     const checks = createAllCheckedMap();
     const onToggleLegend = vi.fn();
 
-    render(
+    renderWithLocale(
       <LegendLineup
         checks={checks}
         onToggleLegend={onToggleLegend}
@@ -73,7 +80,7 @@ describe('LegendLineup', () => {
       />
     );
 
-    fireEvent.click(screen.getByLabelText('バンガロール'));
+    fireEvent.click(screen.getByLabelText('Bangalore'));
     expect(onToggleLegend).toHaveBeenCalledWith('bangalore');
   });
 
@@ -81,7 +88,7 @@ describe('LegendLineup', () => {
     const checks = createAllCheckedMap();
     const onToggleAll = vi.fn();
 
-    render(
+    renderWithLocale(
       <LegendLineup
         checks={checks}
         onToggleLegend={vi.fn()}
@@ -90,7 +97,7 @@ describe('LegendLineup', () => {
       />
     );
 
-    fireEvent.click(screen.getByLabelText('全レジェンドを選択'));
+    fireEvent.click(screen.getByLabelText('Select all legends'));
     expect(onToggleAll).toHaveBeenCalled();
   });
 
@@ -98,7 +105,7 @@ describe('LegendLineup', () => {
     const checks = createAllCheckedMap();
     const onToggleClass = vi.fn();
 
-    render(
+    renderWithLocale(
       <LegendLineup
         checks={checks}
         onToggleLegend={vi.fn()}
@@ -107,7 +114,7 @@ describe('LegendLineup', () => {
       />
     );
 
-    const assaultCheckbox = screen.getByRole('checkbox', { name: /アサルト/ });
+    const assaultCheckbox = screen.getByRole('checkbox', { name: /Assault/ });
     fireEvent.click(assaultCheckbox);
     expect(onToggleClass).toHaveBeenCalledWith('Assault');
   });
@@ -117,7 +124,7 @@ describe('LegendLineup', () => {
     checks.set('bangalore', false);
     checks.set('wraith', false);
 
-    render(
+    renderWithLocale(
       <LegendLineup
         checks={checks}
         onToggleLegend={vi.fn()}
@@ -126,6 +133,6 @@ describe('LegendLineup', () => {
       />
     );
 
-    expect(screen.getByText('全選択 (26/28)')).toBeInTheDocument();
+    expect(screen.getByText('Select All (26/28)')).toBeInTheDocument();
   });
 });

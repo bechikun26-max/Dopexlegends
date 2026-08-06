@@ -10,6 +10,8 @@ export default defineConfig({
       'src/**/*.unit.test.ts',
       'src/**/*.property.test.tsx',
       'src/**/*.unit.test.tsx',
+      'src/**/*.test.tsx',
+      'src/**/*.test.ts',
     ],
     globals: true,
     setupFiles: ['./src/test-setup.ts'],

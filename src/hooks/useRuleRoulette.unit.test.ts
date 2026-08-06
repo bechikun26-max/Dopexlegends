@@ -58,9 +58,9 @@ describe('useRuleRoulette (3 independent slots)', () => {
     it('should provide correct titles', () => {
       const { result } = renderHook(() => useRuleRoulette(defaultParams()));
 
-      expect(result.current.legendClassSlot.title).toBe('クラス縛り');
-      expect(result.current.weaponCategorySlot.title).toBe('武器1カテゴリ縛り');
-      expect(result.current.ammoTypeSlot.title).toBe('武器2弾薬縛り');
+      expect(result.current.legendClassSlot.title).toBe('roulette.legendClassSlot');
+      expect(result.current.weaponCategorySlot.title).toBe('roulette.weaponCategorySlot');
+      expect(result.current.ammoTypeSlot.title).toBe('roulette.ammoTypeSlot');
     });
 
     it('should provide correct rule sets', () => {

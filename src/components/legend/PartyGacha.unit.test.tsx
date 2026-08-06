@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { PartyGacha } from './PartyGacha';
+import { LocaleProvider } from '../../i18n';
 import type { Legend } from '../../types';
 
 const mockLegends: Legend[] = [
@@ -9,17 +10,23 @@ const mockLegends: Legend[] = [
   { id: 'bloodhound', name: 'ブラッドハウンド', class: 'Recon', imagePath: '/images/legends/bloodhound.png', hasThirdWeaponSlot: false },
 ];
 
+function renderWithLocale(ui: React.ReactElement) {
+  return render(<LocaleProvider>{ui}</LocaleProvider>);
+}
+
 describe('PartyGacha', () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    vi.stubGlobal('navigator', { language: 'ja' });
   });
 
   afterEach(() => {
     vi.useRealTimers();
+    vi.unstubAllGlobals();
   });
 
   it('renders party size selector with default of 3', () => {
-    render(
+    renderWithLocale(
       <PartyGacha
         onExecute={vi.fn()}
         partyResult={null}
@@ -34,7 +41,7 @@ describe('PartyGacha', () => {
   });
 
   it('renders all party size options (1人, 2人, 3人)', () => {
-    render(
+    renderWithLocale(
       <PartyGacha
         onExecute={vi.fn()}
         partyResult={null}
@@ -49,7 +56,7 @@ describe('PartyGacha', () => {
   });
 
   it('renders the execute button', () => {
-    render(
+    renderWithLocale(
       <PartyGacha
         onExecute={vi.fn()}
         partyResult={null}
@@ -63,7 +70,7 @@ describe('PartyGacha', () => {
 
   it('calls onExecute with lineups and party size when button clicked', async () => {
     const onExecute = vi.fn();
-    render(
+    renderWithLocale(
       <PartyGacha
         onExecute={onExecute}
         partyResult={null}
@@ -88,7 +95,7 @@ describe('PartyGacha', () => {
 
   it('changes party size when selector button is clicked', async () => {
     const onExecute = vi.fn();
-    render(
+    renderWithLocale(
       <PartyGacha
         onExecute={onExecute}
         partyResult={null}
@@ -117,7 +124,7 @@ describe('PartyGacha', () => {
       mockLegends[2],
     ];
 
-    render(
+    renderWithLocale(
       <PartyGacha
         onExecute={vi.fn()}
         partyResult={partyResult}
@@ -135,7 +142,7 @@ describe('PartyGacha', () => {
   });
 
   it('does not display results when partyResult is null', () => {
-    render(
+    renderWithLocale(
       <PartyGacha
         onExecute={vi.fn()}
         partyResult={null}
@@ -149,7 +156,7 @@ describe('PartyGacha', () => {
   });
 
   it('displays error message when error is provided', () => {
-    render(
+    renderWithLocale(
       <PartyGacha
         onExecute={vi.fn()}
         partyResult={null}
@@ -162,7 +169,7 @@ describe('PartyGacha', () => {
   });
 
   it('does not display error when error is null', () => {
-    render(
+    renderWithLocale(
       <PartyGacha
         onExecute={vi.fn()}
         partyResult={null}
@@ -176,7 +183,7 @@ describe('PartyGacha', () => {
 
   it('passes single-member lineup when party size is 1', async () => {
     const onExecute = vi.fn();
-    render(
+    renderWithLocale(
       <PartyGacha
         onExecute={onExecute}
         partyResult={null}

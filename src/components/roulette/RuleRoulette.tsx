@@ -2,6 +2,7 @@ import { useCallback, useState, useEffect, useRef } from 'react';
 import { useRuleRoulette } from '../../hooks/useRuleRoulette';
 import type { RouletteSlot } from '../../hooks/useRuleRoulette';
 import { useGachaAnimation } from '../../hooks/useGachaAnimation';
+import { useTranslation } from '../../i18n';
 import type { Rule } from '../../types';
 import { RouletteResult } from './RouletteResult';
 import { RouletteControls } from './RouletteControls';
@@ -18,6 +19,8 @@ interface RuleRouletteProps {
 
 /** A single roulette panel with its own animation, result, and controls */
 function RoulettePanel({ slot, triggerSpin }: { slot: RouletteSlot; triggerSpin: number }) {
+  const { t } = useTranslation();
+
   const handleSpin = useCallback(() => {
     slot.spinSlot();
   }, [slot]);
@@ -42,14 +45,14 @@ function RoulettePanel({ slot, triggerSpin }: { slot: RouletteSlot; triggerSpin:
   return (
     <div className={`${styles.panel} ${!slot.enabled ? styles.panelDisabled : ''}`}>
       <div className={styles.panelHeader}>
-        <h3 className={styles.panelTitle}>{slot.title}</h3>
+        <h3 className={styles.panelTitle}>{t(slot.title)}</h3>
         <label className={styles.enableToggle}>
           <input
             type="checkbox"
             checked={slot.enabled}
             onChange={(e) => slot.toggleEnabled(e.target.checked)}
           />
-          <span className={styles.enableLabel}>有効</span>
+          <span className={styles.enableLabel}>{t('common.enabled')}</span>
         </label>
       </div>
 
@@ -60,9 +63,9 @@ function RoulettePanel({ slot, triggerSpin }: { slot: RouletteSlot; triggerSpin:
             className={`${styles.spinButton} ${isAnimating ? styles.spinning : ''}`}
             onClick={startAnimation}
             disabled={isAnimating}
-            aria-label={`${slot.title}ルーレット実行`}
+            aria-label={t('roulette.spinSlot', { title: t(slot.title) })}
           >
-            {isAnimating ? '抽選中...' : '実行'}
+            {isAnimating ? t('common.drawing') : t('roulette.spin')}
           </button>
 
           <div className={`${styles.resultArea} ${isAnimating ? styles.animating : ''}`}>
@@ -89,6 +92,7 @@ export function RuleRoulette({
   setWeaponSlot1Checks,
   setWeaponSlot2Checks,
 }: RuleRouletteProps) {
+  const { t } = useTranslation();
   const {
     legendClassSlot,
     weaponCategorySlot,
@@ -112,17 +116,17 @@ export function RuleRoulette({
   }, []);
 
   return (
-    <section className={styles.container} aria-label="縛りルールルーレット">
+    <section className={styles.container} aria-label={t('roulette.ariaLabel')}>
       <div className={styles.header}>
-        <h2 className={styles.title}>縛りルールルーレット</h2>
+        <h2 className={styles.title}>{t('roulette.title')}</h2>
         <button
           type="button"
           className={styles.spinAllButton}
           onClick={handleSpinAll}
           disabled={!anyEnabled}
-          aria-label="全ルーレット実行"
+          aria-label={t('roulette.spinAll')}
         >
-          全ルーレット実行
+          {t('roulette.spinAll')}
         </button>
       </div>
 

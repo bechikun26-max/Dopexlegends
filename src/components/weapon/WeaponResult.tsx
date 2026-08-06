@@ -1,4 +1,5 @@
-import type { Weapon, WeaponCategory, AmmoType } from '../../types';
+import type { Weapon } from '../../types';
+import { useTranslation } from '../../i18n';
 import styles from './WeaponResult.module.css';
 
 interface WeaponResultProps {
@@ -6,27 +7,6 @@ interface WeaponResultProps {
   slot2Result: Weapon | null;
   slot3Result?: Weapon | null;
 }
-
-/** 武器カテゴリの日本語表示マッピング */
-const CATEGORY_LABELS: Record<WeaponCategory, string> = {
-  Shotgun: 'ショットガン',
-  SMG: 'サブマシンガン',
-  Pistol: 'ピストル',
-  AR: 'アサルトライフル',
-  LMG: 'ライトマシンガン',
-  Marksman: 'マークスマン',
-  Sniper: 'スナイパーライフル',
-};
-
-/** 弾薬種類の日本語表示マッピング */
-const AMMO_LABELS: Record<AmmoType, string> = {
-  Shotgun: 'ショットガンアモ',
-  Light: 'ライトアモ',
-  Heavy: 'ヘビーアモ',
-  Energy: 'エネルギー',
-  Sniper: 'スナイパーアモ',
-  Arrow: 'アロー',
-};
 
 /** 弾薬種類ごとの背景色 */
 const AMMO_COLORS: Record<string, string> = {
@@ -52,29 +32,32 @@ function getAmmoBackground(weapon: Weapon): React.CSSProperties {
 }
 
 function SlotResult({ weapon, slotNumber }: { weapon: Weapon; slotNumber: number }) {
-  const slotLabel = slotNumber === 3 ? 'スリング' : `スロット${slotNumber}`;
+  const { t } = useTranslation();
+  const slotLabel = slotNumber === 3 ? t('weaponGacha.slingLabel') : t('weaponGacha.slotLabel', { number: slotNumber });
+  const ariaLabel = slotNumber === 3 ? t('weaponGacha.slingResult') : t('weaponGacha.slotResult', { number: slotNumber });
   return (
     <div
       className={styles.slotResult}
       style={getAmmoBackground(weapon)}
-      aria-label={`${slotLabel}の結果`}
+      aria-label={ariaLabel}
     >
       <span className={styles.slotLabel}>{slotLabel}</span>
       <img
         src={weapon.imagePath}
-        alt={weapon.name}
+        alt={t(`weapons.${weapon.id}`)}
         className={styles.weaponImage}
       />
-      <span className={styles.weaponName}>{weapon.name}</span>
-      <span className={styles.category}>{CATEGORY_LABELS[weapon.category]}</span>
+      <span className={styles.weaponName}>{t(`weapons.${weapon.id}`)}</span>
+      <span className={styles.category}>{t(`categories.${weapon.category}`)}</span>
       <span className={styles.ammoType}>
-        {weapon.ammoTypes.map((ammo) => AMMO_LABELS[ammo]).join(' / ')}
+        {weapon.ammoTypes.map((ammo) => t(`ammoTypes.${ammo}`)).join(' / ')}
       </span>
     </div>
   );
 }
 
 export function WeaponResult({ slot1Result, slot2Result, slot3Result }: WeaponResultProps) {
+  const { t } = useTranslation();
   const hasAnyResult = slot1Result || slot2Result || slot3Result;
 
   if (!hasAnyResult) {
@@ -82,7 +65,7 @@ export function WeaponResult({ slot1Result, slot2Result, slot3Result }: WeaponRe
   }
 
   return (
-    <div className={styles.container} role="region" aria-label="武器ガチャ結果">
+    <div className={styles.container} role="region" aria-label={t('weaponGacha.resultAriaLabel')}>
       {slot1Result && <SlotResult weapon={slot1Result} slotNumber={1} />}
       {slot2Result && <SlotResult weapon={slot2Result} slotNumber={2} />}
       {slot3Result && <SlotResult weapon={slot3Result} slotNumber={3} />}

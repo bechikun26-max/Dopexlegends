@@ -1,10 +1,15 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { RouletteControls } from './RouletteControls';
+import { LocaleProvider } from '../../i18n';
+
+function renderWithLocale(ui: React.ReactElement) {
+  return render(<LocaleProvider>{ui}</LocaleProvider>);
+}
 
 describe('RouletteControls', () => {
   it('renders nothing when hasResult is false (Req 11.6)', () => {
-    const { container } = render(
+    renderWithLocale(
       <RouletteControls
         hasResult={false}
         isApplied={false}
@@ -12,26 +17,27 @@ describe('RouletteControls', () => {
         onToggleApply={vi.fn()}
       />
     );
-    expect(container).toBeEmptyDOMElement();
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
   });
 
   it('renders reset button and apply toggle when hasResult is true', () => {
-    render(
+    renderWithLocale(
       <RouletteControls
         hasResult={true}
-        isApplied={true}
+        isApplied={false}
         onReset={vi.fn()}
         onToggleApply={vi.fn()}
       />
     );
-    expect(screen.getByRole('button', { name: 'リセット' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Reset' })).toBeInTheDocument();
     expect(screen.getByRole('checkbox')).toBeInTheDocument();
-    expect(screen.getByText('適用')).toBeInTheDocument();
+    expect(screen.getByText('Apply')).toBeInTheDocument();
   });
 
   it('calls onReset when reset button is clicked (Req 11.3)', () => {
     const onReset = vi.fn();
-    render(
+    renderWithLocale(
       <RouletteControls
         hasResult={true}
         isApplied={true}
@@ -39,13 +45,13 @@ describe('RouletteControls', () => {
         onToggleApply={vi.fn()}
       />
     );
-    fireEvent.click(screen.getByRole('button', { name: 'リセット' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
     expect(onReset).toHaveBeenCalledTimes(1);
   });
 
   it('calls onToggleApply with false when toggle is unchecked (Req 11.4)', () => {
     const onToggleApply = vi.fn();
-    render(
+    renderWithLocale(
       <RouletteControls
         hasResult={true}
         isApplied={true}
@@ -59,7 +65,7 @@ describe('RouletteControls', () => {
 
   it('calls onToggleApply with true when toggle is checked (Req 11.5)', () => {
     const onToggleApply = vi.fn();
-    render(
+    renderWithLocale(
       <RouletteControls
         hasResult={true}
         isApplied={false}
@@ -71,8 +77,8 @@ describe('RouletteControls', () => {
     expect(onToggleApply).toHaveBeenCalledWith(true);
   });
 
-  it('shows apply toggle as checked when isApplied is true', () => {
-    render(
+  it('shows Unapply label when isApplied is true', () => {
+    renderWithLocale(
       <RouletteControls
         hasResult={true}
         isApplied={true}
@@ -80,11 +86,11 @@ describe('RouletteControls', () => {
         onToggleApply={vi.fn()}
       />
     );
-    expect(screen.getByRole('checkbox')).toBeChecked();
+    expect(screen.getByText('Unapply')).toBeInTheDocument();
   });
 
-  it('shows apply toggle as unchecked when isApplied is false', () => {
-    render(
+  it('shows Apply label when isApplied is false', () => {
+    renderWithLocale(
       <RouletteControls
         hasResult={true}
         isApplied={false}
@@ -92,6 +98,6 @@ describe('RouletteControls', () => {
         onToggleApply={vi.fn()}
       />
     );
-    expect(screen.getByRole('checkbox')).not.toBeChecked();
+    expect(screen.getByText('Apply')).toBeInTheDocument();
   });
 });

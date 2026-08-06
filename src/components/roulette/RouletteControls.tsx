@@ -1,3 +1,4 @@
+import { useTranslation } from '../../i18n';
 import styles from './RouletteControls.module.css';
 
 interface RouletteControlsProps {
@@ -17,6 +18,8 @@ export function RouletteControls({
   onReset,
   onToggleApply,
 }: RouletteControlsProps) {
+  const { t } = useTranslation();
+
   if (!hasResult) {
     return null;
   }
@@ -27,9 +30,9 @@ export function RouletteControls({
         type="button"
         className={styles.resetButton}
         onClick={onReset}
-        aria-label="リセット"
+        aria-label={t('common.reset')}
       >
-        リセット
+        {t('common.reset')}
       </button>
 
       <label className={styles.applyToggle}>
@@ -38,7 +41,9 @@ export function RouletteControls({
           checked={isApplied}
           onChange={() => onToggleApply(!isApplied)}
         />
-        <span className={styles.applyLabel}>適用</span>
+        <span className={styles.applyLabel}>
+          {isApplied ? t('common.unapply') : t('common.apply')}
+        </span>
       </label>
     </div>
   );

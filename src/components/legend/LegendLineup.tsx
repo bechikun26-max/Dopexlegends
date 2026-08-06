@@ -3,6 +3,7 @@ import type { LegendClass } from '../../types';
 import { LEGENDS } from '../../data/legends';
 import { CheckboxGroup } from '../shared/CheckboxGroup';
 import { ClassGroupCheckbox } from '../shared/ClassGroupCheckbox';
+import { useTranslation } from '../../i18n';
 import styles from './LegendLineup.module.css';
 
 interface LegendLineupProps {
@@ -13,23 +14,24 @@ interface LegendLineupProps {
   disabledIds?: Set<string>;
 }
 
-/** クラスの表示順序と日本語名 */
-const CLASS_ORDER: { class: LegendClass; label: string }[] = [
-  { class: 'Assault', label: 'アサルト' },
-  { class: 'Skirmisher', label: 'スカーミッシャー' },
-  { class: 'Recon', label: 'リコン' },
-  { class: 'Support', label: 'サポート' },
-  { class: 'Controller', label: 'コントローラー' },
+/** クラスの表示順序 */
+const CLASS_ORDER: LegendClass[] = [
+  'Assault',
+  'Skirmisher',
+  'Recon',
+  'Support',
+  'Controller',
 ];
 
 export function LegendLineup({ checks, onToggleLegend, onToggleClass, onToggleAll, disabledIds }: LegendLineupProps) {
+  const { t } = useTranslation();
   const selectAllRef = useRef<HTMLInputElement>(null);
 
   /** クラスごとにグループ化されたレジェンド */
   const legendsByClass = useMemo(() => {
     const grouped = new Map<LegendClass, typeof LEGENDS>();
-    for (const entry of CLASS_ORDER) {
-      grouped.set(entry.class, LEGENDS.filter(l => l.class === entry.class));
+    for (const legendClass of CLASS_ORDER) {
+      grouped.set(legendClass, LEGENDS.filter(l => l.class === legendClass));
     }
     return grouped;
   }, []);
@@ -53,7 +55,7 @@ export function LegendLineup({ checks, onToggleLegend, onToggleClass, onToggleAl
   }, [isIndeterminate]);
 
   return (
-    <div className={styles.container} role="region" aria-label="レジェンドラインナップ">
+    <div className={styles.container} role="region" aria-label={t('legendGacha.lineupAriaLabel')}>
       {/* 全選択チェックボックス */}
       <label className={styles.selectAll}>
         <input
@@ -62,29 +64,34 @@ export function LegendLineup({ checks, onToggleLegend, onToggleClass, onToggleAl
           checked={allChecked}
           onChange={onToggleAll}
           className={styles.selectAllCheckbox}
-          aria-label="全レジェンドを選択"
+          aria-label={t('legendGacha.selectAllLegends')}
         />
-        <span className={styles.selectAllLabel}>全選択 ({totalChecked}/{LEGENDS.length})</span>
+        <span className={styles.selectAllLabel}>{t('common.selectAllCount', { checked: totalChecked, total: LEGENDS.length })}</span>
       </label>
 
       {/* クラスごとのグループ */}
-      {CLASS_ORDER.map(({ class: legendClass, label }) => {
+      {CLASS_ORDER.map((legendClass) => {
         const classLegends = legendsByClass.get(legendClass) ?? [];
         const memberIds = classLegends.map(l => l.id);
+        const className = t(`classes.${legendClass}`);
+        const translatedLegends = classLegends.map(l => ({
+          ...l,
+          name: t(`legends.${l.id}`),
+        }));
 
         return (
           <div key={legendClass} className={styles.classSection}>
             <ClassGroupCheckbox
-              groupName={label}
+              groupName={className}
               memberIds={memberIds}
               checks={checks}
               onToggleGroup={() => onToggleClass(legendClass)}
             />
             <CheckboxGroup
-              items={classLegends}
+              items={translatedLegends}
               checks={checks}
               onChange={onToggleLegend}
-              groupLabel={`${label}クラスのレジェンド`}
+              groupLabel={t('legendGacha.classLegendsGroup', { className })}
               disabledIds={disabledIds}
             />
           </div>

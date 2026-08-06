@@ -8,6 +8,7 @@ import { AdminPanel } from './components/admin/AdminPanel';
 import { AdminLogin } from './components/admin/AdminLogin';
 import { useNessieEasterEgg } from './hooks/useNessieEasterEgg';
 import { NessieAnimation } from './components/shared/NessieAnimation';
+import { useTranslation } from './i18n';
 import styles from './App.module.css';
 
 
@@ -19,6 +20,7 @@ function isBOPath(): boolean {
 /** 通常ユーザー向けアプリ */
 function AppContent() {
   const { legendGacha, weaponGacha } = useAppContext();
+  const { t } = useTranslation();
   const showSlot3 = legendGacha.partyResult?.some(l => l.hasThirdWeaponSlot) === true;
   const [showProfile, setShowProfile] = useState(false);
 
@@ -35,13 +37,13 @@ function AppContent() {
   return (
     <div className={styles.app}>
       <header className={styles.header}>
-        <h1 className={styles.title}>DopexLegends <span className={styles.seasonBadge}>シーズン30対応</span></h1>
+        <h1 className={styles.title}>{t('app.title')} <span className={styles.seasonBadge}>{t('app.seasonBadge')}</span></h1>
         <button
           type="button"
           className={styles.profileButton}
           onClick={() => setShowProfile(!showProfile)}
-          aria-label="プロフィール設定"
-          title="プロフィール設定"
+          aria-label={t('app.profileButton')}
+          title={t('app.profileButton')}
         >
           👤
         </button>
@@ -52,7 +54,7 @@ function AppContent() {
         <div className={styles.profileOverlay} onClick={() => setShowProfile(false)}>
           <div className={styles.profilePanel} onClick={(e) => e.stopPropagation()}>
             <div className={styles.profileHeader}>
-              <span className={styles.profileTitle}>プロフィール設定</span>
+              <span className={styles.profileTitle}>{t('app.profileButton')}</span>
               <button
                 type="button"
                 className={styles.profileClose}
@@ -93,6 +95,7 @@ function AppContent() {
 
 /** BO（バックオフィス）ページ */
 function BOContent() {
+  const { t } = useTranslation();
   const [isAuthenticated, setIsAuthenticated] = useState(
     () => sessionStorage.getItem('bo-authenticated') === 'true'
   );
@@ -104,7 +107,7 @@ function BOContent() {
   return (
     <div className={styles.app}>
       <header className={styles.header}>
-        <h1 className={styles.title}>DopexLegends — BO</h1>
+        <h1 className={styles.title}>{t('app.boTitle')}</h1>
       </header>
       <main className={styles.content}>
         {isAuthenticated ? <AdminPanel /> : <AdminLogin onAuthenticated={handleAuth} />}

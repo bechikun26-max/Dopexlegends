@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import type { Weapon, WeaponCategory } from '../../types';
+import { useTranslation } from '../../i18n';
+import type { Weapon } from '../../types';
 import styles from './CarePackageManager.module.css';
 
 interface CarePackageManagerProps {
@@ -8,23 +9,14 @@ interface CarePackageManagerProps {
   onToggleCarePackage: (weaponId: string) => void;
 }
 
-/** カテゴリの日本語表示名 */
-const CATEGORY_LABELS: Record<WeaponCategory, string> = {
-  Shotgun: 'ショットガン',
-  SMG: 'サブマシンガン',
-  Pistol: 'ピストル',
-  AR: 'アサルトライフル',
-  LMG: 'ライトマシンガン',
-  Marksman: 'マークスマン',
-  Sniper: 'スナイパーライフル',
-};
-
 /**
  * ケアパッケージ武器管理コンポーネント。
  * ケアパッケージ武器を別セクションに一覧表示し、各武器にトグルUIを提供する。
  * Requirements 8.1, 8.2, 8.3, 8.4, 8.5
  */
 export function CarePackageManager({ weapons, carePackageFlags, onToggleCarePackage }: CarePackageManagerProps) {
+  const { t } = useTranslation();
+
   /** ケアパッケージ武器（フラグがtrue） */
   const carePackageWeapons = useMemo(
     () => weapons.filter((w) => carePackageFlags.get(w.id) === true),
@@ -38,12 +30,12 @@ export function CarePackageManager({ weapons, carePackageFlags, onToggleCarePack
   );
 
   return (
-    <div className={styles.container} role="region" aria-label="ケアパッケージ武器管理">
+    <div className={styles.container} role="region" aria-label={t('admin.carePackageAriaLabel')}>
       {/* ケアパッケージ武器セクション */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>ケアパッケージ武器</h3>
+        <h3 className={styles.sectionTitle}>{t('admin.carePackageWeapons')}</h3>
         {carePackageWeapons.length === 0 ? (
-          <p className={styles.emptyMessage}>ケアパッケージ武器はありません</p>
+          <p className={styles.emptyMessage}>{t('admin.noCarePackageWeapons')}</p>
         ) : (
           carePackageWeapons.map((weapon) => (
             <WeaponToggleRow
@@ -58,9 +50,9 @@ export function CarePackageManager({ weapons, carePackageFlags, onToggleCarePack
 
       {/* 通常武器セクション */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>通常武器</h3>
+        <h3 className={styles.sectionTitle}>{t('admin.normalWeapons')}</h3>
         {normalWeapons.length === 0 ? (
-          <p className={styles.emptyMessage}>通常武器はありません</p>
+          <p className={styles.emptyMessage}>{t('admin.noNormalWeapons')}</p>
         ) : (
           normalWeapons.map((weapon) => (
             <WeaponToggleRow
@@ -86,18 +78,20 @@ function WeaponToggleRow({
   isCarePackage: boolean;
   onToggle: (weaponId: string) => void;
 }) {
-  const categoryLabel = CATEGORY_LABELS[weapon.category];
-  const ammoLabel = weapon.ammoTypes.join(' / ');
+  const { t } = useTranslation();
+  const weaponName = t(`weapons.${weapon.id}`);
+  const categoryLabel = t(`categories.${weapon.category}`);
+  const ammoLabel = weapon.ammoTypes.map(ammo => t(`ammoTypes.${ammo}`)).join(' / ');
 
   return (
     <div className={`${styles.weaponRow} ${isCarePackage ? styles.carePackage : ''}`}>
       <div className={styles.weaponInfo}>
-        <span className={styles.weaponName}>{weapon.name}</span>
+        <span className={styles.weaponName}>{weaponName}</span>
         <span className={styles.weaponMeta}>
           {categoryLabel} ・ {ammoLabel}
         </span>
       </div>
-      <label className={styles.toggle} aria-label={`${weapon.name}をケアパッケージに${isCarePackage ? '解除' : '設定'}`}>
+      <label className={styles.toggle} aria-label={isCarePackage ? t('admin.toggleNormal', { weapon: weaponName }) : t('admin.toggleCarePackage', { weapon: weaponName })}>
         <input
           type="checkbox"
           checked={isCarePackage}

@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useMemo } from 'react';
 import { useAppContext } from '../../context/AppContext';
+import { useTranslation } from '../../i18n';
 import { LEGENDS } from '../../data/legends';
 import type { Legend } from '../../types';
 import { LegendLineup } from './LegendLineup';
@@ -9,16 +10,16 @@ import styles from './LegendGacha.module.css';
 
 const PARTY_SIZES = [1, 2, 3] as const;
 
-/** Map error codes to user-friendly Japanese messages */
-function mapErrorMessage(error: string | null): string | null {
+/** Map error codes to translation keys */
+function getErrorTranslationKey(error: string | null): string | null {
   if (!error) return null;
   switch (error) {
     case 'NO_LEGENDS_SELECTED':
-      return '最低1人のレジェンドを選択してください';
+      return 'legendGacha.noLegendsError';
     case 'MEMBER_INSUFFICIENT':
-      return 'ガチャ対象のレジェンドが不足しています。ラインナップまたはプロフィールの所持レジェンド設定を確認してください';
+      return 'legendGacha.insufficientError';
     default:
-      return error;
+      return null;
   }
 }
 
@@ -28,6 +29,7 @@ function mapErrorMessage(error: string | null): string | null {
 export function LegendGacha() {
   const { legendGacha, effectiveLineup, profile } = useAppContext();
   const { checks, partyResult, error, toggleLegend, toggleClass, toggleAll, executePartyGacha } = legendGacha;
+  const { t } = useTranslation();
 
   /** プロフィールで未所持のレジェンドID */
   const disabledLegendIds = useMemo(() => {
@@ -90,11 +92,12 @@ export function LegendGacha() {
 
   /** 演出中は仮表示、完了後は確定結果を表示 */
   const shownMembers = isAnimating ? displayMembers : partyResult;
-  const displayError = mapErrorMessage(error);
+  const errorKey = getErrorTranslationKey(error);
+  const displayError = errorKey ? t(errorKey) : null;
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.header}>レジェンドガチャ</h2>
+      <h2 className={styles.header}>{t('legendGacha.title')}</h2>
 
       <div className={styles.actions}>
         <button
@@ -102,12 +105,12 @@ export function LegendGacha() {
           className={`${styles.executeButton} ${isAnimating ? styles.spinning : ''}`}
           onClick={startAnimation}
           disabled={isAnimating}
-          aria-label="レジェンドガチャ実行"
+          aria-label={t('legendGacha.execute')}
         >
-          {isAnimating ? '抽選中...' : 'レジェンドガチャ実行'}
+          {isAnimating ? t('common.drawing') : t('legendGacha.execute')}
         </button>
 
-        <span className={styles.sizeLabel}>ピック候補人数:</span>
+        <span className={styles.sizeLabel}>{t('legendGacha.pickCandidates')}</span>
         <div className={styles.sizeButtons}>
           {PARTY_SIZES.map((size) => (
             <button
@@ -127,17 +130,17 @@ export function LegendGacha() {
 
       {shownMembers && shownMembers.length > 0 && (
         <div className={styles.results}>
-          <span className={styles.resultsTitle}>ピック結果</span>
+          <span className={styles.resultsTitle}>{t('legendGacha.result')}</span>
           <div className={`${styles.memberList} ${isAnimating ? styles.animating : ''}`}>
             {shownMembers.map((legend, index) => (
               <div key={index} className={styles.memberCard}>
-                <span className={styles.memberLabel}>候補{index + 1}</span>
+                <span className={styles.memberLabel}>{t('legendGacha.candidate', { index: index + 1 })}</span>
                 <img
                   src={legend.imagePath}
-                  alt={legend.name}
+                  alt={t(`legends.${legend.id}`)}
                   className={styles.memberImage}
                 />
-                <span className={styles.memberName}>{legend.name}</span>
+                <span className={styles.memberName}>{t(`legends.${legend.id}`)}</span>
               </div>
             ))}
           </div>
@@ -145,7 +148,7 @@ export function LegendGacha() {
       )}
 
       <div className={styles.lineupSection}>
-        <CollapsibleSection title="レジェンドラインナップ設定">
+        <CollapsibleSection title={t('legendGacha.lineupSettings')}>
           <LegendLineup
             checks={checks}
             onToggleLegend={toggleLegend}

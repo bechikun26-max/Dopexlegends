@@ -2,6 +2,7 @@ import { useMemo, useState, useRef, useEffect } from 'react';
 import type { WeaponCategory } from '../../types';
 import type { SlotNumber } from '../../hooks/useWeaponGacha';
 import { WEAPONS } from '../../data/weapons';
+import { useTranslation } from '../../i18n';
 import { CheckboxGroup } from '../shared/CheckboxGroup';
 import { ClassGroupCheckbox } from '../shared/ClassGroupCheckbox';
 import styles from './WeaponSlotLineup.module.css';
@@ -15,18 +16,19 @@ interface WeaponSlotLineupProps {
   onSetChecks: (checks: Map<string, boolean>) => void;
 }
 
-/** カテゴリの表示順序と日本語名 */
-const CATEGORY_ORDER: { category: WeaponCategory; label: string }[] = [
-  { category: 'Shotgun', label: 'ショットガン' },
-  { category: 'SMG', label: 'サブマシンガン' },
-  { category: 'Pistol', label: 'ピストル' },
-  { category: 'AR', label: 'アサルトライフル' },
-  { category: 'LMG', label: 'ライトマシンガン' },
-  { category: 'Marksman', label: 'マークスマン' },
-  { category: 'Sniper', label: 'スナイパーライフル' },
+/** カテゴリの表示順序 */
+const CATEGORY_ORDER: WeaponCategory[] = [
+  'Shotgun',
+  'SMG',
+  'Pistol',
+  'AR',
+  'LMG',
+  'Marksman',
+  'Sniper',
 ];
 
 export function WeaponSlotLineup({ slotNumber, checks, carePackageFlags, onToggleWeapon, onToggleCategory, onSetChecks }: WeaponSlotLineupProps) {
+  const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState<Set<WeaponCategory>>(new Set());
   const [includeCarePackage, setIncludeCarePackage] = useState(false);
 
@@ -39,7 +41,7 @@ export function WeaponSlotLineup({ slotNumber, checks, carePackageFlags, onToggl
   /** カテゴリごとにグループ化された武器 */
   const weaponsByCategory = useMemo(() => {
     const grouped = new Map<WeaponCategory, typeof WEAPONS>();
-    for (const { category } of CATEGORY_ORDER) {
+    for (const category of CATEGORY_ORDER) {
       const categoryWeapons = WEAPONS.filter((w) => {
         if (w.category !== category) return false;
         // checksに含まれていない = そもそも管理対象外
@@ -75,8 +77,8 @@ export function WeaponSlotLineup({ slotNumber, checks, carePackageFlags, onToggl
   };
 
   return (
-    <div className={styles.container} role="region" aria-label={`スロット${slotNumber}ラインナップ`}>
-      <h3 className={styles.slotTitle}>{slotNumber === 3 ? 'バリスティック専用スリング' : `スロット${slotNumber}`}</h3>
+    <div className={styles.container} role="region" aria-label={t('weaponGacha.slotLineupAriaLabel', { number: slotNumber })}>
+      <h3 className={styles.slotTitle}>{slotNumber === 3 ? t('weaponGacha.slingLabel') : t('weaponGacha.slotLabel', { number: slotNumber })}</h3>
 
       {/* ケアパケ武器含めるチェックボックス */}
       {carePackageWeapons.length > 0 && (
@@ -86,7 +88,7 @@ export function WeaponSlotLineup({ slotNumber, checks, carePackageFlags, onToggl
             checked={includeCarePackage}
             onChange={() => setIncludeCarePackage(!includeCarePackage)}
           />
-          <span>ケアパケ武器を含める</span>
+          <span>{t('common.includeCarePackage')}</span>
         </label>
       )}
 
@@ -97,14 +99,19 @@ export function WeaponSlotLineup({ slotNumber, checks, carePackageFlags, onToggl
         onSetChecks={onSetChecks}
       />
 
-      {CATEGORY_ORDER.map(({ category, label }) => {
+      {CATEGORY_ORDER.map((category) => {
         const categoryWeapons = weaponsByCategory.get(category) ?? [];
+        const label = t(`categories.${category}`);
 
         // カテゴリ内に武器がない場合はスキップ
         if (categoryWeapons.length === 0) return null;
 
         const memberIds = categoryWeapons.map((w) => w.id);
         const isCollapsed = collapsed.has(category);
+        const translatedWeapons = categoryWeapons.map(w => ({
+          ...w,
+          name: t(`weapons.${w.id}`),
+        }));
 
         return (
           <div key={category} className={styles.categorySection}>
@@ -113,7 +120,7 @@ export function WeaponSlotLineup({ slotNumber, checks, carePackageFlags, onToggl
                 type="button"
                 className={`${styles.collapseButton} ${isCollapsed ? styles.collapsed : ''}`}
                 onClick={() => toggleCollapse(category)}
-                aria-label={isCollapsed ? `${label}を展開` : `${label}を折りたたむ`}
+                aria-label={isCollapsed ? t('weaponGacha.expandCategory', { category: label }) : t('weaponGacha.collapseCategory', { category: label })}
               >
                 ▼
               </button>
@@ -126,10 +133,10 @@ export function WeaponSlotLineup({ slotNumber, checks, carePackageFlags, onToggl
             </div>
             {!isCollapsed && (
               <CheckboxGroup
-                items={categoryWeapons}
+                items={translatedWeapons}
                 checks={checks}
                 onChange={onToggleWeapon}
-                groupLabel={`${label}カテゴリの武器`}
+                groupLabel={t('weaponGacha.categoryWeaponsGroup', { category: label })}
                 carePackageFlags={carePackageFlags}
               />
             )}
@@ -150,6 +157,7 @@ function SelectAllCheckbox({
   weaponsByCategory: Map<WeaponCategory, typeof WEAPONS>;
   onSetChecks: (checks: Map<string, boolean>) => void;
 }) {
+  const { t } = useTranslation();
   const selectAllRef = useRef<HTMLInputElement>(null);
 
   // 表示中の全武器ID
@@ -194,7 +202,7 @@ function SelectAllCheckbox({
         checked={allChecked}
         onChange={handleToggleAll}
       />
-      <span>全選択 ({checkedCount}/{allVisibleIds.length})</span>
+      <span>{t('common.selectAllCount', { checked: checkedCount, total: allVisibleIds.length })}</span>
     </label>
   );
 }

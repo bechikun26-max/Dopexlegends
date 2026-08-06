@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import type { Legend } from '../../types';
 import { LEGENDS } from '../../data/legends';
+import { useTranslation } from '../../i18n';
 import { ErrorMessage } from '../shared/ErrorMessage';
 import styles from './PartyGacha.module.css';
 
@@ -18,6 +19,7 @@ interface PartyGachaProps {
 const PARTY_SIZES = [1, 2, 3] as const;
 
 export function PartyGacha({ onExecute, partyResult, error, effectiveLineup }: PartyGachaProps) {
+  const { t } = useTranslation();
   const [partySize, setPartySize] = useState<number>(3);
   const [isAnimating, setIsAnimating] = useState(false);
   const [displayMembers, setDisplayMembers] = useState<Legend[]>([]);
@@ -73,7 +75,7 @@ export function PartyGacha({ onExecute, partyResult, error, effectiveLineup }: P
   return (
     <div className={styles.container}>
       <div className={styles.sizeSelector}>
-        <span className={styles.sizeLabel}>パーティ人数:</span>
+        <span className={styles.sizeLabel}>{t('partyGacha.partySize')}</span>
         <div className={styles.sizeButtons}>
           {PARTY_SIZES.map((size) => (
             <button
@@ -83,7 +85,7 @@ export function PartyGacha({ onExecute, partyResult, error, effectiveLineup }: P
               onClick={() => setPartySize(size)}
               aria-pressed={partySize === size}
             >
-              {size}人
+              {t('partyGacha.personCount', { count: size })}
             </button>
           ))}
         </div>
@@ -95,24 +97,24 @@ export function PartyGacha({ onExecute, partyResult, error, effectiveLineup }: P
         onClick={startAnimation}
         disabled={isAnimating}
       >
-        {isAnimating ? '抽選中...' : 'パーティガチャ実行'}
+        {isAnimating ? t('common.drawing') : t('partyGacha.execute')}
       </button>
 
       <ErrorMessage message={error} />
 
       {shownMembers && shownMembers.length > 0 && (
         <div className={styles.results}>
-          <span className={styles.resultsTitle}>パーティ結果</span>
+          <span className={styles.resultsTitle}>{t('partyGacha.result')}</span>
           <div className={`${styles.memberList} ${isAnimating ? styles.animating : ''}`}>
             {shownMembers.map((legend, index) => (
               <div key={index} className={styles.memberCard}>
-                <span className={styles.memberLabel}>メンバー{index + 1}</span>
+                <span className={styles.memberLabel}>{t('partyGacha.member', { index: index + 1 })}</span>
                 <img
                   src={legend.imagePath}
-                  alt={legend.name}
+                  alt={t(`legends.${legend.id}`)}
                   className={styles.memberImage}
                 />
-                <span className={styles.memberName}>{legend.name}</span>
+                <span className={styles.memberName}>{t(`legends.${legend.id}`)}</span>
               </div>
             ))}
           </div>

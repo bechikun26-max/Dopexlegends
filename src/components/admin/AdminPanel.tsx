@@ -1,4 +1,5 @@
 import { useAppContext } from '../../context/AppContext';
+import { useTranslation } from '../../i18n';
 import { WEAPONS } from '../../data/weapons';
 import { CarePackageManager } from '../weapon/CarePackageManager';
 import styles from './AdminPanel.module.css';
@@ -9,15 +10,16 @@ import styles from './AdminPanel.module.css';
  */
 export function AdminPanel() {
   const { weaponGacha } = useAppContext();
+  const { t } = useTranslation();
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>⚙️ 管理画面</h2>
-        <span className={styles.badge}>ADMIN</span>
+        <h2 className={styles.title}>⚙️ {t('admin.title')}</h2>
+        <span className={styles.badge}>{t('admin.badge')}</span>
       </div>
       <p className={styles.description}>
-        ケアパッケージ武器の設定を変更できます。変更は即座にガチャに反映されます。
+        {t('admin.description')}
       </p>
 
       <CarePackageManager
