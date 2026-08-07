@@ -1,4 +1,4 @@
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render, renderHook } from '@testing-library/react';
 import { LocaleProvider, useTranslation } from '../context';
 
