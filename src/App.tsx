@@ -38,6 +38,14 @@ function AppContent() {
     <div className={styles.app}>
       <header className={styles.header}>
         <h1 className={styles.title}>{t('app.title')} <span className={styles.seasonBadge}>{t('app.seasonBadge')}</span></h1>
+        <p className={styles.headerDescription}>
+          {t('app.description')}
+        </p>
+        <ul className={styles.headerFeatures}>
+          <li>{t('app.featureRoulette')}</li>
+          <li>{t('app.featureLegend')}</li>
+          <li>{t('app.featureWeapon')}</li>
+        </ul>
         <button
           type="button"
           className={styles.profileButton}

@@ -3,6 +3,10 @@
   "app.seasonBadge": "シーズン30対応",
   "app.profileButton": "プロフィール設定",
   "app.boTitle": "DopexLegends — BO",
+  "app.description": "普通のAPEXに飽きた皆さん。縛りルールを自らに課すことができるガチャサイトを作りました。これでドーパミンたくさん出そうね。",
+  "app.featureRoulette": "縛りルール",
+  "app.featureLegend": "レジェンドガチャ",
+  "app.featureWeapon": "武器ガチャ",
 
   "common.drawing": "抽選中...",
   "common.execute": "実行",

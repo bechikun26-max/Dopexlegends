@@ -3,6 +3,10 @@
   "app.seasonBadge": "Season 30",
   "app.profileButton": "Profile Settings",
   "app.boTitle": "DopexLegends — BO",
+  "app.description": "Tired of regular APEX? We made a gacha site where you can impose challenge rules on yourself. Let's get that dopamine flowing!",
+  "app.featureRoulette": "Rule Roulette",
+  "app.featureLegend": "Legend Gacha",
+  "app.featureWeapon": "Weapon Gacha",
 
   "common.drawing": "Drawing...",
   "common.execute": "Execute",
