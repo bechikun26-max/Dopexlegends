@@ -23,6 +23,17 @@ function AppContent() {
   const { t } = useTranslation();
   const showSlot3 = legendGacha.partyResult?.some(l => l.hasThirdWeaponSlot) === true;
   const [showProfile, setShowProfile] = useState(false);
+  const [showDescription, setShowDescription] = useState(
+    () => localStorage.getItem('hideDescription') !== 'true'
+  );
+
+  const toggleDescription = useCallback(() => {
+    setShowDescription((prev) => {
+      const next = !prev;
+      localStorage.setItem('hideDescription', next ? 'false' : 'true');
+      return next;
+    });
+  }, []);
 
   const { isPlaying, onAnimationEnd, animationKey } = useNessieEasterEgg(
     legendGacha.partyResult,
@@ -38,14 +49,6 @@ function AppContent() {
     <div className={styles.app}>
       <header className={styles.header}>
         <h1 className={styles.title}>{t('app.title')} <span className={styles.seasonBadge}>{t('app.seasonBadge')}</span></h1>
-        <p className={styles.headerDescription}>
-          {t('app.description')}
-        </p>
-        <ul className={styles.headerFeatures}>
-          <li>{t('app.featureRoulette')}</li>
-          <li>{t('app.featureLegend')}</li>
-          <li>{t('app.featureWeapon')}</li>
-        </ul>
         <button
           type="button"
           className={styles.profileButton}
@@ -56,6 +59,28 @@ function AppContent() {
           👤
         </button>
       </header>
+
+      {/* サイト説明（トグルで非表示可能） */}
+      <div className={styles.descriptionBar}>
+        <button
+          type="button"
+          className={styles.descriptionToggle}
+          onClick={toggleDescription}
+          aria-expanded={showDescription}
+        >
+          {showDescription ? '▲' : '▼'} {t('app.descriptionToggle')}
+        </button>
+        {showDescription && (
+          <div className={styles.descriptionContent}>
+            <p className={styles.descriptionText}>{t('app.description')}</p>
+            <ul className={styles.descriptionFeatures}>
+              <li>{t('app.featureRoulette')}</li>
+              <li>{t('app.featureLegend')}</li>
+              <li>{t('app.featureWeapon')}</li>
+            </ul>
+          </div>
+        )}
+      </div>
 
       {/* プロフィールパネル */}
       {showProfile && (
