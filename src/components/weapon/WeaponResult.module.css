@@ -50,3 +50,13 @@
   object-fit: contain;
   border-radius: 0.375rem;
 }
+
+.animating {
+  animation: shake 0.1s infinite;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}

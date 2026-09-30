@@ -109,19 +109,23 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
   const [slot1Display, setSlot1Display] = useState<Weapon | null>(null);
   const [slot2Display, setSlot2Display] = useState<Weapon | null>(null);
   const [slot3Display, setSlot3Display] = useState<Weapon | null>(null);
-  const slotTimeoutRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
+  // スロットごとに独立したタイマー参照を持たせ、別スロットの演出を止めないようにする
+  const slot1TimeoutRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const slot2TimeoutRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const slot3TimeoutRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const startSlotAnimation = useCallback((slot: 1 | 2 | 3) => {
     if (animationCandidates.length === 0) return;
 
     const setAnimating = slot === 1 ? setSlot1Animating : slot === 2 ? setSlot2Animating : setSlot3Animating;
     const setDisplay = slot === 1 ? setSlot1Display : slot === 2 ? setSlot2Display : setSlot3Display;
+    const timeoutRefs = slot === 1 ? slot1TimeoutRefs : slot === 2 ? slot2TimeoutRefs : slot3TimeoutRefs;
 
     setAnimating(true);
 
-    // Clear any previous timeouts for this slot
-    slotTimeoutRefs.current.forEach(clearTimeout);
-    slotTimeoutRefs.current = [];
+    // このスロット自身の以前のタイマーだけをクリアする（他スロットには触れない）
+    timeoutRefs.current.forEach(clearTimeout);
+    timeoutRefs.current = [];
 
     const duration = 1500;
     const totalSteps = 20;
@@ -136,7 +140,7 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
         setDisplay(animationCandidates[randomIndex]);
 
         if (i === totalSteps - 1) {
-          setTimeout(() => {
+          const finalTimeout = setTimeout(() => {
             if (slot === 3) {
               // スリングはケアパケ以外全武器からランダム
               executeSlingGacha();
@@ -145,12 +149,13 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
             }
             setAnimating(false);
           }, 100);
+          timeoutRefs.current.push(finalTimeout);
         }
       }, elapsed);
 
-      slotTimeoutRefs.current.push(timeout);
+      timeoutRefs.current.push(timeout);
     }
-  }, [animationCandidates, executeSlotGacha]);
+  }, [animationCandidates, executeSlotGacha, executeSlingGacha]);
 
   /** 演出中は仮表示、完了後は確定結果を表示 */
   const shownSlot1 = isAnimating ? displayItem : slot1Animating ? slot1Display : slot1Result;
@@ -166,7 +171,7 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
           type="button"
           className={`${styles.executeAllButton} ${isAnimating ? styles.spinning : ''}`}
           onClick={startAnimation}
-          disabled={isAllSlotsDisabled || isAnimating}
+          disabled={isAllSlotsDisabled || isAnimating || slot1Animating || slot2Animating || slot3Animating}
           aria-label={t('weaponGacha.executeAll')}
         >
           {isAnimating ? t('common.drawing') : t('weaponGacha.executeAll')}
@@ -207,11 +212,14 @@ export function WeaponGacha({ showSlot3 = false }: WeaponGachaProps) {
 
       <ErrorMessage message={error} />
 
-      <div className={`${styles.resultSection} ${(isAnimating || slot1Animating || slot2Animating || slot3Animating) ? styles.animating : ''}`}>
+      <div className={styles.resultSection}>
         <WeaponResult
           slot1Result={shownSlot1}
           slot2Result={shownSlot2}
           slot3Result={showSlot3 ? shownSlot3 : undefined}
+          slot1Animating={isAnimating || slot1Animating}
+          slot2Animating={isAnimating || slot2Animating}
+          slot3Animating={isAnimating || slot3Animating}
         />
       </div>
 

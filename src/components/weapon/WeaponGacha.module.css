@@ -101,13 +101,3 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
 }
-
-.animating {
-  animation: shake 0.1s infinite;
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-2px); }
-  75% { transform: translateX(2px); }
-}

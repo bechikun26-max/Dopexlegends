@@ -6,6 +6,10 @@ interface WeaponResultProps {
   slot1Result: Weapon | null;
   slot2Result: Weapon | null;
   slot3Result?: Weapon | null;
+  /** アニメーション（シェイク）中のスロット番号。指定されたスロットの武器だけが揺れる */
+  slot1Animating?: boolean;
+  slot2Animating?: boolean;
+  slot3Animating?: boolean;
 }
 
 /** 弾薬種類ごとの背景色 */
@@ -31,13 +35,13 @@ function getAmmoBackground(weapon: Weapon): React.CSSProperties {
   };
 }
 
-function SlotResult({ weapon, slotNumber }: { weapon: Weapon; slotNumber: number }) {
+function SlotResult({ weapon, slotNumber, animating = false }: { weapon: Weapon; slotNumber: number; animating?: boolean }) {
   const { t } = useTranslation();
   const slotLabel = slotNumber === 3 ? t('weaponGacha.slingLabel') : t('weaponGacha.slotLabel', { number: slotNumber });
   const ariaLabel = slotNumber === 3 ? t('weaponGacha.slingResult') : t('weaponGacha.slotResult', { number: slotNumber });
   return (
     <div
-      className={styles.slotResult}
+      className={`${styles.slotResult} ${animating ? styles.animating : ''}`}
       style={getAmmoBackground(weapon)}
       aria-label={ariaLabel}
     >
@@ -56,7 +60,14 @@ function SlotResult({ weapon, slotNumber }: { weapon: Weapon; slotNumber: number
   );
 }
 
-export function WeaponResult({ slot1Result, slot2Result, slot3Result }: WeaponResultProps) {
+export function WeaponResult({
+  slot1Result,
+  slot2Result,
+  slot3Result,
+  slot1Animating = false,
+  slot2Animating = false,
+  slot3Animating = false,
+}: WeaponResultProps) {
   const { t } = useTranslation();
   const hasAnyResult = slot1Result || slot2Result || slot3Result;
 
@@ -66,9 +77,9 @@ export function WeaponResult({ slot1Result, slot2Result, slot3Result }: WeaponRe
 
   return (
     <div className={styles.container} role="region" aria-label={t('weaponGacha.resultAriaLabel')}>
-      {slot1Result && <SlotResult weapon={slot1Result} slotNumber={1} />}
-      {slot2Result && <SlotResult weapon={slot2Result} slotNumber={2} />}
-      {slot3Result && <SlotResult weapon={slot3Result} slotNumber={3} />}
+      {slot1Result && <SlotResult weapon={slot1Result} slotNumber={1} animating={slot1Animating} />}
+      {slot2Result && <SlotResult weapon={slot2Result} slotNumber={2} animating={slot2Animating} />}
+      {slot3Result && <SlotResult weapon={slot3Result} slotNumber={3} animating={slot3Animating} />}
     </div>
   );
 }
